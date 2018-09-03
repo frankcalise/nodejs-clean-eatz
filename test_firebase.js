@@ -1,8 +1,5 @@
-// global.fetch = require("node-fetch");
 const fbConfig = require("./firebase_config.json");
 const firebase = require("firebase");
-// const firebase = require("firebase/firebase-app");
-// require("firebase/firebase-database");
 
 const config = {
   apiKey: fbConfig.apiKey,
