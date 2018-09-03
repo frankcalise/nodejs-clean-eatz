@@ -1,6 +1,7 @@
 meals_summary.json
 orders.json
 credentials.json
+firebase_config.json
 node_modules/
 
 # Windows image file caches
