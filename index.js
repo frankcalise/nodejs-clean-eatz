@@ -60,7 +60,7 @@ const parseOrders = body => {
       .eq(pIndex)
       .text();
     const ci = parseCustomerInfo(customerBlock);
-    const { total, payment, name, email, phone, tip } = ci;
+    const { total, payment, name, email, phone, tip, discount, promocode } = ci;
 
     // Meal details
     const mealNodes = $(".order", item);
@@ -81,6 +81,8 @@ const parseOrders = body => {
       orderId,
       transactionId,
       orderDate,
+      discount,
+      promocode,
       total,
       tip,
       payment,
