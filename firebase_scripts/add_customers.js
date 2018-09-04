@@ -1,4 +1,5 @@
 const fbConfig = require("../firebase_config.json");
+const fbUtils = require("../utils/firebase_utils");
 const firebase = require("firebase");
 const fs = require("fs");
 
@@ -52,7 +53,9 @@ if (!orders) {
 orders.forEach(item => {
   const customer = item.customer;
   console.log(customer.name);
-  if (checkCustomerExists(customer.name)) {
-    writeCustomerData(customer.name, customer.email, customer.phone);
-  }
+  const customerKey = fbUtils.encodeAsFirebaseKey(customer.email);
+  console.log("  key = ", customerKey);
+  // if (checkCustomerExists(customer.name)) {
+  //   writeCustomerData(customer.name, customer.email, customer.phone);
+  // }
 });
