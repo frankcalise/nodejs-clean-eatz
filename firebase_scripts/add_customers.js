@@ -9,28 +9,25 @@ const config = {
   databaseURL: fbConfig.databaseURL
 };
 firebase.initializeApp(config);
-const ref = firebase
-  .app()
-  .database()
-  .ref();
 
-const checkCustomerExists = name => {
-  const found = firebase
+const checkCustomerExistsByKey = key => {
+  return firebase
     .database()
-    .ref("customers/")
-    .orderByChild("name")
-    .equalTo(name);
-  return found ? true : false;
+    .ref("customers/" + key)
+    .once("value")
+    .then(function(snapshot) {
+      return snapshot.exists();
+    });
 };
 
-const writeCustomerData = (name, email, phone) => {
+const writeCustomerData = (key, name, email, phone) => {
   firebase
     .database()
-    .ref("customers/")
-    .push({
-      name,
-      email,
-      phone
+    .ref("customers/" + key)
+    .set({
+      name: name,
+      email: email,
+      phone: phone
     });
 };
 
@@ -52,10 +49,22 @@ if (!orders) {
 
 orders.forEach(item => {
   const customer = item.customer;
-  console.log(customer.name);
   const customerKey = fbUtils.encodeAsFirebaseKey(customer.email);
-  console.log("  key = ", customerKey);
-  // if (checkCustomerExists(customer.name)) {
-  //   writeCustomerData(customer.name, customer.email, customer.phone);
-  // }
+
+  checkCustomerExistsByKey(customerKey).then(exists => {
+    console.log(exists);
+    if (exists === false) {
+      writeCustomerData(
+        customerKey,
+        customer.name,
+        customer.email,
+        customer.phone
+      );
+    }
+  });
 });
+
+// console.log("finished adding customers");
+
+// free resources
+// firebase.app().delete();
