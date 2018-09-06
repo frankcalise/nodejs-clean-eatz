@@ -68,7 +68,8 @@ const writeOrderData = (item, customerKey) => {
     discount,
     payment,
     total,
-    meals
+    meals,
+    tip
   } = item;
 
   firebase
@@ -78,8 +79,9 @@ const writeOrderData = (item, customerKey) => {
       customerKey,
       orderDate: moment(orderDate).format(),
       promocode: promocode || "",
-      discount: discount || "$0.00",
-      total,
+      discount: discount ? Number(discount.substring(1)) : 0.0,
+      tip: tip ? Number(tip.substring(1)) : 0.0,
+      total: Number(total.substring(1)),
       payment,
       meals
     });
