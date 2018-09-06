@@ -43,6 +43,22 @@ const writeCustomerData = (
     });
 };
 
+const updateLastOrderData = (
+  key,
+  lastOrderId,
+  orderDate,
+  lastTransactionId
+) => {
+  firebase
+    .database()
+    .ref("customers/" + key)
+    .update({
+      lastOrderDate: moment(orderDate).format(),
+      lastOrderId,
+      lastTransactionId
+    });
+};
+
 const writeOrderData = (item, customerKey) => {
   const {
     orderId,
@@ -105,6 +121,7 @@ orders.forEach(item => {
       );
     } else {
       // update last order date / id and transaction
+      updateLastOrderData(customerKey, orderId, orderDate, transactionId);
     }
 
     // add the order details
