@@ -2,6 +2,7 @@ const fbConfig = require("../firebase_config.json");
 const fbUtils = require("../utils/firebase_utils");
 const firebase = require("firebase");
 const fs = require("fs");
+const moment = require("moment");
 
 const config = {
   apiKey: fbConfig.apiKey,
@@ -20,14 +21,51 @@ const checkCustomerExistsByKey = key => {
     });
 };
 
-const writeCustomerData = (key, name, email, phone) => {
+const writeCustomerData = (
+  key,
+  name,
+  email,
+  phone,
+  lastOrderId,
+  orderDate,
+  lastTransactionId
+) => {
   firebase
     .database()
     .ref("customers/" + key)
     .set({
       name: name,
       email: email,
-      phone: phone
+      phone: phone,
+      lastOrderDate: moment(orderDate).format(),
+      lastOrderId,
+      lastTransactionId
+    });
+};
+
+const writeOrderData = (item, customerKey) => {
+  const {
+    orderId,
+    transactionId,
+    orderDate,
+    promocode,
+    discount,
+    payment,
+    total,
+    meals
+  } = item;
+
+  firebase
+    .database()
+    .ref(`orders/${orderId}/${transactionId}`)
+    .set({
+      customerKey,
+      orderDate: moment(orderDate).format(),
+      promocode: promocode || "",
+      discount: discount || "$0.00",
+      total,
+      payment,
+      meals
     });
 };
 
@@ -51,6 +89,8 @@ orders.forEach(item => {
   const customer = item.customer;
   const customerKey = fbUtils.encodeAsFirebaseKey(customer.email);
 
+  const { orderId, orderDate, transactionId } = item;
+
   checkCustomerExistsByKey(customerKey).then(exists => {
     console.log(exists);
     if (exists === false) {
@@ -58,9 +98,17 @@ orders.forEach(item => {
         customerKey,
         customer.name,
         customer.email,
-        customer.phone
+        customer.phone,
+        orderId,
+        orderDate,
+        transactionId
       );
+    } else {
+      // update last order date / id and transaction
     }
+
+    // add the order details
+    writeOrderData(item, customerKey);
   });
 });
 
