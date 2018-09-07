@@ -14,7 +14,7 @@ ReactDOM.render(
     <div>
       {/* <NavBar /> */}
       <DefaultLayout exact path="/" component={Dashboard} />
-      <DefaultLayout path="/customers" component={Customers} />
+      <DefaultLayout path="/customers/:id?" component={Customers} />
       <DefaultLayout path="/reports/:id?" component={Reports} />
     </div>
   </Router>,
