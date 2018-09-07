@@ -59,6 +59,15 @@ const updateLastOrderData = (
     });
 };
 
+const updateOrdersForCustomer = (key, orderId, transactionId) => {
+  firebase
+    .database()
+    .ref(`customers/${key}/orders/${orderId}`)
+    .set(transactionId);
+  // .ref(`customers/${key}/orders`)
+  // .remove();
+};
+
 const writeOrderData = (item, customerKey) => {
   const {
     orderId,
@@ -107,7 +116,7 @@ orders.forEach(item => {
   const customer = item.customer;
   const customerKey = fbUtils.encodeAsFirebaseKey(customer.email);
 
-  const { orderId, orderDate, transactionId } = item;
+  const { orderId, orderDate, transactionId, orders } = item;
 
   checkCustomerExistsByKey(customerKey).then(exists => {
     console.log(exists);
@@ -124,6 +133,7 @@ orders.forEach(item => {
     } else {
       // update last order date / id and transaction
       updateLastOrderData(customerKey, orderId, orderDate, transactionId);
+      updateOrdersForCustomer(customerKey, orderId, transactionId);
     }
 
     // add the order details
