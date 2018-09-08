@@ -6,7 +6,7 @@ const moment = require("moment");
 firebase.initializeApp(fbConfig);
 
 const writeSummaryData = (summary, orderId) => {
-  const { orderCount, numMeals, total, tips, meals } = summary;
+  const { orderCount, numMeals, total, tips, meals, menuDate } = summary;
 
   firebase
     .database()
@@ -16,6 +16,7 @@ const writeSummaryData = (summary, orderId) => {
       numMeals,
       total,
       tips,
+      menuDate,
       meals
     });
 };

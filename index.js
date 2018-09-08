@@ -40,6 +40,9 @@ const parseOrders = body => {
     .startOf("day");
 
   $(".sing-ord").each((idx, item) => {
+    // Satellite order check
+    const isSatellite = $("p", item).hasClass("alert-danger");
+
     // Transaction ID
     const rawTid = $("h4", item);
     const transactionId = parseTransactionId(rawTid);
@@ -59,6 +62,27 @@ const parseOrders = body => {
     if (isCleared === true) {
       pIndex = 2;
     }
+
+    // Check for satellite pick up alert
+    if (transactionId === "029932") {
+      console.log(
+        $("p", item)
+          .eq(pIndex)
+          .text()
+      );
+    }
+
+    let satellitePickUp = null;
+    if (isSatellite) {
+      console.log("sat pick up");
+      // satellite pick up
+      const satellitePickUpNode = $("p", item).eq(0);
+      satellitePickUp = parseSatellitePickUp(satellitePickUpNode);
+
+      // change index for proper customer parsing
+      pIndex = 2;
+    }
+
     const customerBlock = $("p", item)
       .eq(pIndex)
       .text();
@@ -75,7 +99,7 @@ const parseOrders = body => {
       .val();
 
     // Build order object based off parsed results
-    orders.push({
+    const order = {
       customer: {
         name,
         email,
@@ -90,7 +114,11 @@ const parseOrders = body => {
       tip,
       payment,
       meals
-    });
+    };
+    if (satellitePickUp) {
+      order.satellitePickUp = satellitePickUp;
+    }
+    orders.push(order);
   });
 
   // Query for meal names to make things easier
@@ -100,6 +128,12 @@ const parseOrders = body => {
 };
 
 const parseTransactionId = node => {
+  const cleaned = node.text().trim();
+  const idx = cleaned.indexOf(":");
+  return cleaned.substring(idx + 1).trim();
+};
+
+const parseSatellitePickUp = node => {
   const cleaned = node.text().trim();
   const idx = cleaned.indexOf(":");
   return cleaned.substring(idx + 1).trim();
@@ -182,6 +216,11 @@ const parseCurrency = currency => {
 
 const summarizeOrders = orders => {
   const summary = { meals: {} };
+  const menuDate = moment()
+    // .day(-7)
+    .weekday(4)
+    .startOf("day")
+    .format("YYYY-MM-DD");
   let numMeals = 0;
   let total = 0.0;
   let tips = 0.0;
@@ -282,6 +321,7 @@ const summarizeOrders = orders => {
     });
   });
 
+  summary.menuDate = menuDate;
   summary.orderCount = orders.length;
   summary.numMeals = numMeals;
   summary.total = Number(total.toFixed(2));
