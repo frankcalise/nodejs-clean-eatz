@@ -34,7 +34,10 @@ const parseOrders = body => {
   const orders = [];
   const $ = cheerio.load(body);
   const today = moment();
-  const monday = today.clone().weekday(1);
+  const thursday = today
+    .clone()
+    .weekday(4)
+    .startOf("day");
 
   $(".sing-ord").each((idx, item) => {
     // Transaction ID
@@ -45,10 +48,10 @@ const parseOrders = body => {
     const rawOrderDate = rawTid.next();
     const orderDate = parseOrderDate(rawOrderDate);
 
-    // if (moment(orderDate, "M/D/YYYY h:mm:ss A").isBefore(monday)) {
-    //   console.log("skipping ", orderDate);
-    //   return true;
-    // }
+    if (moment(orderDate, "M/D/YYYY h:mm:ss A").isBefore(thursday)) {
+      console.log("skipping ", orderDate);
+      return true;
+    }
 
     // Customer Info
     let pIndex = 1;
@@ -178,7 +181,7 @@ const parseCurrency = currency => {
 };
 
 const summarizeOrders = orders => {
-  const summary = {};
+  const summary = { meals: {} };
   let numMeals = 0;
   let total = 0.0;
   let tips = 0.0;
@@ -218,49 +221,49 @@ const summarizeOrders = orders => {
       const epGfNc =
         meal.extraProtein && !meal.halfCarb && meal.noCarb && meal.glutenFree;
 
-      const currentMeal = summary[mealName];
+      const currentMeal = summary.meals[mealName];
       if (currentMeal !== undefined) {
         // let total = summary[mealName].total;
         // total = total === undefined ? mealQty : mealQty + total;
-        summary[mealName].total = summary[mealName].total + mealQty;
-        summary[mealName].standard = std
-          ? summary[mealName].standard + mealQty
-          : summary[mealName].standard;
-        summary[mealName].extraProtein = ep
-          ? summary[mealName].extraProtein + mealQty
-          : summary[mealName].extraProtein;
-        summary[mealName].glutenFree = gf
-          ? summary[mealName].glutenFree + mealQty
-          : summary[mealName].glutenFree;
-        summary[mealName].halfCarb = hc
-          ? summary[mealName].halfCarb + mealQty
-          : summary[mealName].halfCarb;
-        summary[mealName].noCarb = nc
-          ? summary[mealName].noCarb + mealQty
-          : summary[mealName].noCarb;
-        (summary[mealName].epGf = epGf
-          ? summary[mealName].epGf + mealQty
-          : summary[mealName].epGf),
-          (summary[mealName].epHc = epHc
-            ? summary[mealName].epHc + mealQty
-            : summary[mealName].epHc),
-          (summary[mealName].epNc = epNc
-            ? summary[mealName].epNc + mealQty
-            : summary[mealName].epNc),
-          (summary[mealName].gfHc = gfHc
-            ? summary[mealName].gfHc + mealQty
-            : summary[mealName].gfHc),
-          (summary[mealName].gfNc = gfNc
-            ? summary[mealName].gfNc + mealQty
-            : summary[mealName].gfNc),
-          (summary[mealName].epGfNc = epGfNc
-            ? summary[mealName].epGfNc + mealQty
-            : summary[mealName].epGfNc),
-          (summary[mealName].epGfHc = epGfHc
-            ? summary[mealName].epGfHc + mealQty
-            : summary[mealName].epGfHc);
+        summary.meals[mealName].total = summary.meals[mealName].total + mealQty;
+        summary.meals[mealName].standard = std
+          ? summary.meals[mealName].standard + mealQty
+          : summary.meals[mealName].standard;
+        summary.meals[mealName].extraProtein = ep
+          ? summary.meals[mealName].extraProtein + mealQty
+          : summary.meals[mealName].extraProtein;
+        summary.meals[mealName].glutenFree = gf
+          ? summary.meals[mealName].glutenFree + mealQty
+          : summary.meals[mealName].glutenFree;
+        summary.meals[mealName].halfCarb = hc
+          ? summary.meals[mealName].halfCarb + mealQty
+          : summary.meals[mealName].halfCarb;
+        summary.meals[mealName].noCarb = nc
+          ? summary.meals[mealName].noCarb + mealQty
+          : summary.meals[mealName].noCarb;
+        (summary.meals[mealName].epGf = epGf
+          ? summary.meals[mealName].epGf + mealQty
+          : summary.meals[mealName].epGf),
+          (summary.meals[mealName].epHc = epHc
+            ? summary.meals[mealName].epHc + mealQty
+            : summary.meals[mealName].epHc),
+          (summary.meals[mealName].epNc = epNc
+            ? summary.meals[mealName].epNc + mealQty
+            : summary.meals[mealName].epNc),
+          (summary.meals[mealName].gfHc = gfHc
+            ? summary.meals[mealName].gfHc + mealQty
+            : summary.meals[mealName].gfHc),
+          (summary.meals[mealName].gfNc = gfNc
+            ? summary.meals[mealName].gfNc + mealQty
+            : summary.meals[mealName].gfNc),
+          (summary.meals[mealName].epGfNc = epGfNc
+            ? summary.meals[mealName].epGfNc + mealQty
+            : summary.meals[mealName].epGfNc),
+          (summary.meals[mealName].epGfHc = epGfHc
+            ? summary.meals[mealName].epGfHc + mealQty
+            : summary.meals[mealName].epGfHc);
       } else {
-        summary[mealName] = {
+        summary.meals[mealName] = {
           total: mealQty,
           standard: std ? mealQty : 0,
           extraProtein: ep ? mealQty : 0,
