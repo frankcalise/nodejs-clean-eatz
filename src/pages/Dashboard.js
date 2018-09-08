@@ -16,6 +16,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import { mainListItems, secondaryListItems } from "./dashboard/listItems";
 import OrderCountSummaryChart from "./dashboard/OrderCountSummaryChart";
+import CurrentMealPlanTable from "./dashboard/CurrentMealPlanTable";
 
 const drawerWidth = 240;
 
@@ -178,12 +179,12 @@ class Dashboard extends React.Component {
             <Typography component="div" className={classes.chartContainer}>
               <OrderCountSummaryChart />
             </Typography>
-            {/* <Typography variant="display1" gutterBottom>
-              Products
+            <Typography variant="display1" gutterBottom>
+              Current Meal Plan
             </Typography>
             <div className={classes.tableContainer}>
-              <SimpleTable />
-            </div> */}
+              <CurrentMealPlanTable />
+            </div>
           </main>
         </div>
       </React.Fragment>
