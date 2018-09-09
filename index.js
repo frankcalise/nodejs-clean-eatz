@@ -34,8 +34,13 @@ const parseOrders = body => {
   const orders = [];
   const $ = cheerio.load(body);
   const today = moment();
+  let adjWeek = 0;
+  if (today.weekday() < 4) {
+    adjWeek = -7;
+  }
   const thursday = today
     .clone()
+    .days(-7)
     .weekday(4)
     .startOf("day");
 
@@ -216,8 +221,13 @@ const parseCurrency = currency => {
 
 const summarizeOrders = orders => {
   const summary = { meals: {} };
+  const today = moment();
+  let adjWeek = 0;
+  if (today.weekday() < 4) {
+    adjWeek = -7;
+  }
   const menuDate = moment()
-    // .day(-7)
+    .day(adjWeek)
     .weekday(4)
     .startOf("day")
     .format("YYYY-MM-DD");
