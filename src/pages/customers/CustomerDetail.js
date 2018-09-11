@@ -1,5 +1,5 @@
 import React from "react";
-import fire from "../../fire";
+import fire from "../../utils/fire";
 import { encodeAsFirebaseKey } from "../../utils/firebaseUtils";
 
 export default class CustomerDetail extends React.Component {

@@ -7,7 +7,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import fire from "../../fire";
+import fire from "../../utils/fire";
 
 const propTypes = {
   classes: PropTypes.object.isRequired

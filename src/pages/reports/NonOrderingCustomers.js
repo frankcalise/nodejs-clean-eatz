@@ -9,7 +9,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import moment from "moment";
-import fire from "../../fire";
+import fire from "../../utils/fire";
 
 const propTypes = {
   classes: PropTypes.object.isRequired
