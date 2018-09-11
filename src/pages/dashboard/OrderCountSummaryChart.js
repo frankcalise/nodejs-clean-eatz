@@ -7,7 +7,7 @@ import YAxis from "recharts/lib/cartesian/YAxis";
 import CartesianGrid from "recharts/lib/cartesian/CartesianGrid";
 import Tooltip from "recharts/lib/component/Tooltip";
 import Legend from "recharts/lib/component/Legend";
-import fire from "../../fire";
+import fire from "../../utils/fire";
 
 class OrderCountSummaryChart extends React.Component {
   constructor(props) {
@@ -47,8 +47,6 @@ class OrderCountSummaryChart extends React.Component {
   };
 
   render() {
-    const orderLabel = "# Orders";
-    const mealsLabel = "# Meals";
     return (
       // 99% per https://github.com/recharts/recharts/issues/172
       <ResponsiveContainer width="99%" height={320}>
