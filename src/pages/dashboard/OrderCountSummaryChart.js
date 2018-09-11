@@ -47,8 +47,6 @@ class OrderCountSummaryChart extends React.Component {
   };
 
   render() {
-    const orderLabel = "# Orders";
-    const mealsLabel = "# Meals";
     return (
       // 99% per https://github.com/recharts/recharts/issues/172
       <ResponsiveContainer width="99%" height={320}>
