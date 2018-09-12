@@ -163,14 +163,6 @@ class NonOrderingCustomers extends React.Component {
             onRequestSort={this.handleRequestSort}
             cols={cols}
           />
-          {/* <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Last Order Date</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Phone</TableCell>
-            </TableRow>
-          </TableHead> */}
           <TableBody>
             {stableSort(rows, getSorting(order, orderBy)).map(row => {
               return (
