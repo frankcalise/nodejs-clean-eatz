@@ -57,14 +57,14 @@ class CurrentMealPlanTable extends React.Component {
               extraProtein,
               glutenFree,
               halfCarb,
-              noCarb,
-              epGf,
-              epHc,
-              epNc,
-              gfHc,
-              gfNc,
-              epGfNc,
-              epGfHc
+              noCarb
+              // epGf,
+              // epHc,
+              // epNc,
+              // gfHc,
+              // gfNc,
+              // epGfNc,
+              // epGfHc
             } = meals[mealKey];
 
             data.push({
