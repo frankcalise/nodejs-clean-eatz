@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
-import OrderCountSummaryChart from "./dashboard/OrderCountSummaryChart";
-import CurrentMealPlanTable from "./dashboard/CurrentMealPlanTable";
+import OrderCountSummaryChart from "./OrderCountSummaryChart";
+import CurrentMealPlanTable from "./CurrentMealPlanTable";
 
 const styles = theme => ({
   chartContainer: {

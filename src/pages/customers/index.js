@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import fire from "../utils/fire";
-import { snapshotToArray } from "../utils/firebaseUtils";
-import CustomerDetail from "./customers/CustomerDetail";
+import fire from "../../utils/fire";
+import { snapshotToArray } from "../../utils/firebaseUtils";
+import CustomerDetail from "./CustomerDetail";
 
 const propTypes = { classes: PropTypes.object.isRequired };
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import NonOrderingCustomers from "./reports/NonOrderingCustomers";
-import OrdersGroupedBySatellite from "./reports/OrdersGroupedBySatellite";
+import NonOrderingCustomers from "./NonOrderingCustomers";
+import OrdersGroupedBySatellite from "./OrdersGroupedBySatellite";
 
 const reportComponents = {
   1: NonOrderingCustomers,
