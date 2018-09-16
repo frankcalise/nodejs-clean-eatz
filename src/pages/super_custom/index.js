@@ -12,13 +12,15 @@ import CustomerForm from "./CustomerForm";
 import MealForm from "./MealForm";
 import Review from "./Review";
 
+const width = 800;
+
 const styles = theme => ({
   layout: {
     width: "auto",
     marginLeft: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit * 2,
-    [theme.breakpoints.up(600 + theme.spacing.unit * 2 * 2)]: {
-      width: 600,
+    [theme.breakpoints.up(width + theme.spacing.unit * 2 * 2)]: {
+      width: width,
       marginLeft: "auto",
       marginRight: "auto"
     }
@@ -27,7 +29,7 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 3,
     marginBottom: theme.spacing.unit * 3,
     padding: theme.spacing.unit * 2,
-    [theme.breakpoints.up(600 + theme.spacing.unit * 3 * 2)]: {
+    [theme.breakpoints.up(width + theme.spacing.unit * 3 * 2)]: {
       marginTop: theme.spacing.unit * 6,
       marginBottom: theme.spacing.unit * 6,
       padding: theme.spacing.unit * 3
@@ -96,7 +98,7 @@ class SuperCustom extends React.Component {
         <main className={classes.layout}>
           <Paper className={classes.paper}>
             <Typography variant="display1" align="center">
-              SuperCustom
+              Custom Meal Order
             </Typography>
             <Stepper activeStep={activeStep} className={classes.stepper}>
               {steps.map(label => (
