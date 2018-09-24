@@ -37,6 +37,9 @@ const writeCustomerData = (
       name: name,
       email: email,
       phone: phone,
+      firstOrderDate: moment(orderDate).valueOf(),
+      firstOrderId: lastOrderId,
+      firstTransactionId: lastTransactionId,
       lastOrderDate: moment(orderDate).format(),
       lastOrderId,
       lastTransactionId
