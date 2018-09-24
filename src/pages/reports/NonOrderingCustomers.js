@@ -148,36 +148,39 @@ class NonOrderingCustomers extends React.Component {
     const { rows, daysSinceLastOrder, order, orderBy } = this.state;
 
     return (
-      <Paper className={classes.root}>
-        <Typography variant="headline" component="heading">
+      <React.Fragment>
+        <Typography variant="display1" component="heading">
           Non Ordering Customers
         </Typography>
         <Typography variant="subheading" gutterBottom>
-          Last {daysSinceLastOrder} days, {rows.length} total customers
+          Have not ordered in {daysSinceLastOrder} days, {rows.length} total
+          customers
         </Typography>
-        <Table className={classes.table}>
-          <EnhancedTableHead
-            order={order}
-            orderBy={orderBy}
-            onRequestSort={this.handleRequestSort}
-            cols={cols}
-          />
-          <TableBody>
-            {stableSort(rows, getSorting(order, orderBy)).map(row => {
-              return (
-                <TableRow key={row.customerKey}>
-                  <TableCell component="th" scope="row">
-                    {row.name}
-                  </TableCell>
-                  <TableCell>{row.lastOrderDate}</TableCell>
-                  <TableCell>{row.email}</TableCell>
-                  <TableCell>{row.phone}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </Paper>
+        <Paper className={classes.root}>
+          <Table className={classes.table}>
+            <EnhancedTableHead
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={this.handleRequestSort}
+              cols={cols}
+            />
+            <TableBody>
+              {stableSort(rows, getSorting(order, orderBy)).map(row => {
+                return (
+                  <TableRow key={row.customerKey}>
+                    <TableCell component="th" scope="row">
+                      {row.name}
+                    </TableCell>
+                    <TableCell>{row.lastOrderDate}</TableCell>
+                    <TableCell>{row.email}</TableCell>
+                    <TableCell>{row.phone}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Paper>
+      </React.Fragment>
     );
   }
 }

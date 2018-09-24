@@ -49,7 +49,7 @@ class OrdersGroupedBySatellite extends React.Component {
   }
 
   runReport = async () => {
-    const orderKey = "70537";
+    const orderKey = "77640";
     let satelliteGroups = {};
 
     const arr = [];
@@ -116,7 +116,7 @@ class OrdersGroupedBySatellite extends React.Component {
 
     return (
       <div>
-        <Typography variant="headline" component="heading">
+        <Typography variant="subheading" component="heading">
           {key}
         </Typography>
         <Paper className={classes.root}>
@@ -158,9 +158,26 @@ class OrdersGroupedBySatellite extends React.Component {
 
   render() {
     const { rows } = this.state;
+    const groups = Object.keys(rows).length;
+
+    if (groups === 0) {
+      return (
+        <React.Fragment>
+          <Typography variant="display1" component="heading">
+            Orders Grouped by Satellite Location
+          </Typography>
+          <Typography variant="subheading" gutterBottom>
+            No satellite orders were placed this week
+          </Typography>
+        </React.Fragment>
+      );
+    }
 
     return (
       <React.Fragment>
+        <Typography variant="display1" component="heading">
+          Orders Grouped by Satellite Location
+        </Typography>
         {Object.keys(rows).map(key => {
           return this.renderTable(key);
         })}
