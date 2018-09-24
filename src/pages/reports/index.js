@@ -2,10 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import NonOrderingCustomers from "./NonOrderingCustomers";
 import OrdersGroupedBySatellite from "./OrdersGroupedBySatellite";
+import FirstTimeCustomers from "./FirstTimeCustomers";
 
 const reportComponents = {
   1: NonOrderingCustomers,
-  2: OrdersGroupedBySatellite
+  2: OrdersGroupedBySatellite,
+  3: FirstTimeCustomers
 };
 
 export default class Reports extends React.Component {
@@ -26,6 +28,9 @@ export default class Reports extends React.Component {
             </li>
             <li>
               <Link to="/reports/2">Orders Grouped by Satellite Location</Link>
+            </li>
+            <li>
+              <Link to="/reports/3">First Time Customers</Link>
             </li>
           </ul>
         </div>
