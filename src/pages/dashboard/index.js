@@ -1,10 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
+import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import OrderCountSummaryChart from "./OrderCountSummaryChart";
 import CurrentMealPlanTable from "./CurrentMealPlanTable";
+import MealPlanRadarChart from "./MealPlanRadarChart";
 
 const styles = theme => ({
   chartContainer: {
@@ -31,9 +33,18 @@ class Dashboard extends React.Component {
         <Typography variant="display1" gutterBottom>
           Current Meal Plan
         </Typography>
-        <div className={classes.tableContainer}>
-          <CurrentMealPlanTable />
-        </div>
+        <Grid container spacing={24}>
+          <Grid item xs={16} sm={8}>
+            <div className={classes.tableContainer}>
+              <CurrentMealPlanTable />
+            </div>
+          </Grid>
+          <Grid item xs={8} sm={4}>
+            <div className={classes.tableContainer}>
+              <MealPlanRadarChart />
+            </div>
+          </Grid>
+        </Grid>
       </React.Fragment>
     );
   }
