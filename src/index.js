@@ -6,8 +6,9 @@ import DefaultLayout from "./components/DefaultLayout";
 import Dashboard from "./pages/dashboard";
 import Customers from "./pages/customers";
 import Reports from "./pages/reports";
-import registerServiceWorker from "./registerServiceWorker";
+import Orders from "./pages/orders";
 import SuperCustom from "./pages/super_custom";
+import registerServiceWorker from "./registerServiceWorker";
 
 ReactDOM.render(
   <Router>
@@ -16,6 +17,7 @@ ReactDOM.render(
       <DefaultLayout path="/customers/:id?" component={Customers} />
       <DefaultLayout path="/reports/:id?" component={Reports} />
       <DefaultLayout path="/super-custom" component={SuperCustom} />
+      <DefaultLayout path="/orders" component={Orders} />
     </Switch>
   </Router>,
   document.getElementById("root")
