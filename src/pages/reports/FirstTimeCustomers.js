@@ -150,7 +150,7 @@ class FirstTimeCustomers extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { rows, daysSinceLastOrder, order, orderBy } = this.state;
+    const { rows, order, orderBy } = this.state;
 
     return (
       <React.Fragment>

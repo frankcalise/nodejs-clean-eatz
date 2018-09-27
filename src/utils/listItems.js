@@ -11,10 +11,6 @@ import BarChartIcon from "@material-ui/icons/BarChart";
 // import LayersIcon from "@material-ui/icons/Layers";
 // import AssignmentIcon from "@material-ui/icons/Assignment";
 
-const Orders = () => {
-  return <div />;
-};
-
 export const mainListItems = (
   <div>
     <ListItem button component={Link} to="/">
