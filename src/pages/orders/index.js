@@ -1,6 +1,9 @@
 import React from "react";
-import { snapshotToArray } from "../../utils/firebaseUtils";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Typography from "@material-ui/core/Typography";
 import fire from "../../utils/fire";
+import MealCard from "../../components/MealCard";
+
 export default class Orders extends React.Component {
   constructor(props) {
     super(props);
@@ -14,50 +17,57 @@ export default class Orders extends React.Component {
     this.getData();
   }
 
-  getCustomerMeta = async customerKey => {
-    await fire
-      .database()
-      .ref(`customers/${customerKey}`)
-      .once("value")
-      .then(customerSnapshot => {
-        const customer = customerSnapshot.val();
-        console.log(customer);
-        const { name, phone, email } = customer;
-        const customerMeta = {
-          name,
-          phone,
-          email
-        };
-      });
-  };
-
   getData = async () => {
-    const orderData = [];
+    const orders = [];
+    let parentOrderKey = null;
     await fire
       .database()
       .ref("orders")
       .orderByKey()
       .limitToLast(1)
-      .once("value")
-      .then(snapshot => {
-        const data = snapshotToArray(snapshot);
-        const orderKeys = Object.keys(data[0]).filter(x => x !== "key");
+      .once("child_added", snapshot => {
+        parentOrderKey = snapshot.key;
+      });
 
-        for (const orderKey of orderKeys) {
-          const order = data[0][orderKey];
-          console.log(order);
-          const customerKey = order.customerKey;
+    await fire
+      .database()
+      .ref(`orders/${parentOrderKey}`)
+      .orderByKey()
+      .on("child_added", snapshot => {
+        const data = snapshot.val();
+        const transactionId = snapshot.key;
+        let customerRef = fire.database().ref(`customers/${data.customerKey}`);
+        customerRef.once("value").then(customerSnapshot => {
+          const customer = customerSnapshot.val();
+          const { name, phone, email } = customer;
+          const order = {
+            ...data,
+            transactionId,
+            customer: {
+              name,
+              phone,
+              email
+            }
+          };
 
-          const customerMeta = this.getCustomerMeta(customerKey);
-
-          orderData.push(order);
-        }
-
-        this.setState({ data: orderData });
+          this.setState({ data: this.state.data.concat([order]) });
+        });
       });
   };
 
   render() {
-    return <div className="orders">current orders</div>;
+    const orders = this.state.data.map(order => {
+      return <MealCard key={order.transactionId} order={order} />;
+    });
+
+    return (
+      <React.Fragment>
+        <CssBaseline />
+        <Typography variant="display1" gutterBottom>
+          Meal Plan Orders
+        </Typography>
+        {orders}
+      </React.Fragment>
+    );
   }
 }
