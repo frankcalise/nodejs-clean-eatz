@@ -12,10 +12,11 @@ const formData = {
 
 agent
   .post("https://www.cleaneatz.com/loginout.aspx")
+  .redirects(0)
   .send(formData)
-
   .end((err, resp) => {
-    if (err) {
+    if (err && err.status === 302) {
+    } else if (err) {
       throw err;
     }
   });
@@ -40,7 +41,7 @@ const parseOrders = body => {
   }
   const thursday = today
     .clone()
-    .days(-7)
+    .days(adjWeek)
     .weekday(4)
     .startOf("day");
 
