@@ -54,7 +54,7 @@ export default class MealPlanRadarChart extends React.Component {
       <RadarChart width={500} height={320} data={data}>
         <PolarGrid />
         <PolarAngleAxis dataKey="name" />
-        <PolarRadiusAxis />
+        <PolarRadiusAxis domain={[0, 150]} />
         <Radar
           name="Meals"
           dataKey="total"
