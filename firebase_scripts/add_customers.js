@@ -81,7 +81,8 @@ const writeOrderData = (item, customerKey) => {
     payment,
     total,
     meals,
-    tip
+    tip,
+    satellitePickUp
   } = item;
 
   firebase
@@ -95,7 +96,9 @@ const writeOrderData = (item, customerKey) => {
       tip: tip ? Number(tip.substring(1)) : 0.0,
       total: Number(total.substring(1)),
       payment,
-      meals
+      meals,
+      satellite: satellitePickUp ? true : false,
+      satellitePickUp: satellitePickUp ? satellitePickUp : null
     });
 };
 
