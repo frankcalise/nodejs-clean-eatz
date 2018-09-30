@@ -42,7 +42,9 @@ const MealCard = ({ ...props }) => {
     meals,
     firstTimeCustomer,
     satellite,
-    satellitePickUp
+    satellitePickUp,
+    total,
+    payment
   } = order;
   const bull = <span className={classes.bullet}>•</span>;
   const { extraProtein, glutenFree, halfCarb, noCarb } = meals[0];
@@ -72,6 +74,10 @@ const MealCard = ({ ...props }) => {
               </React.Fragment>
             );
           })}
+          <br />
+          <span>
+            {payment.indexOf("cash") > 0 ? "Cash" : payment} {bull} ${total}
+          </span>
         </Typography>
       </CardContent>
       <CardActions className={classes.actions}>
