@@ -5,7 +5,6 @@ import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
 import Chip from "@material-ui/core/Chip";
 import Typography from "@material-ui/core/Typography";
 
@@ -37,7 +36,14 @@ const styles = theme => ({
 
 const MealCard = ({ ...props }) => {
   const { classes, order } = props;
-  const { customer, orderDate, meals } = order;
+  const {
+    customer,
+    orderDate,
+    meals,
+    firstTimeCustomer,
+    satellite,
+    satellitePickUp
+  } = order;
   const bull = <span className={classes.bullet}>•</span>;
   const { extraProtein, glutenFree, halfCarb, noCarb } = meals[0];
 
@@ -51,7 +57,9 @@ const MealCard = ({ ...props }) => {
           {customer.name}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          {customer.email} {bull} {customer.phone}
+          <span>{customer.email}</span>
+          <br />
+          <span>{customer.phone}</span>
         </Typography>
         <Typography component="p">
           {meals.map(meal => {
@@ -67,6 +75,16 @@ const MealCard = ({ ...props }) => {
         </Typography>
       </CardContent>
       <CardActions className={classes.actions}>
+        {firstTimeCustomer && (
+          <Chip label="New Customer" color="primary" className={classes.chip} />
+        )}
+        {satellite && (
+          <Chip
+            label={satellitePickUp}
+            color="secondary"
+            className={classes.chip}
+          />
+        )}
         {extraProtein && (
           <Chip label="Extra Protein" className={classes.chip} />
         )}

@@ -1,6 +1,7 @@
 import React from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
+import Grid from "@material-ui/core/Grid";
 import fire from "../../utils/fire";
 import MealCard from "../../components/MealCard";
 
@@ -32,14 +33,20 @@ export default class Orders extends React.Component {
     await fire
       .database()
       .ref(`orders/${parentOrderKey}`)
-      .orderByKey()
+      .orderByChild("orderDate")
       .on("child_added", snapshot => {
         const data = snapshot.val();
         const transactionId = snapshot.key;
         let customerRef = fire.database().ref(`customers/${data.customerKey}`);
         customerRef.once("value").then(customerSnapshot => {
           const customer = customerSnapshot.val();
-          const { name, phone, email } = customer;
+          const { name, phone, email, firstTransactionId } = customer;
+          let firstTimeCustomer = false;
+          if (firstTransactionId) {
+            if (firstTransactionId === transactionId) {
+              firstTimeCustomer = true;
+            }
+          }
           const order = {
             ...data,
             transactionId,
@@ -47,7 +54,8 @@ export default class Orders extends React.Component {
               name,
               phone,
               email
-            }
+            },
+            firstTimeCustomer
           };
 
           this.setState({ data: this.state.data.concat([order]) });
@@ -57,7 +65,11 @@ export default class Orders extends React.Component {
 
   render() {
     const orders = this.state.data.map(order => {
-      return <MealCard key={order.transactionId} order={order} />;
+      return (
+        <Grid item xs key={order.transactionId}>
+          <MealCard order={order} />
+        </Grid>
+      );
     });
 
     return (
@@ -66,7 +78,9 @@ export default class Orders extends React.Component {
         <Typography variant="display1" gutterBottom>
           Meal Plan Orders
         </Typography>
-        {orders}
+        <Grid container spacing={24}>
+          {orders}
+        </Grid>
       </React.Fragment>
     );
   }
