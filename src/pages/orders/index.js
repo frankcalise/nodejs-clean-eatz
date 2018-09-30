@@ -64,13 +64,15 @@ export default class Orders extends React.Component {
   };
 
   render() {
-    const orders = this.state.data.map(order => {
-      return (
-        <Grid item xs key={order.transactionId}>
-          <MealCard order={order} />
-        </Grid>
-      );
-    });
+    const orders = this.state.data
+      .map(order => {
+        return (
+          <Grid item xs key={order.transactionId}>
+            <MealCard order={order} />
+          </Grid>
+        );
+      })
+      .reverse();
 
     return (
       <React.Fragment>
