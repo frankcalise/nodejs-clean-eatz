@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import fire from "../../utils/fire";
+import firebase from "../../config/firebase";
 import { snapshotToArray } from "../../utils/firebaseUtils";
 import CustomerDetail from "./CustomerDetail";
 
@@ -30,7 +30,7 @@ class Customers extends React.Component {
   }
 
   componentDidMount() {
-    const customersRef = fire
+    const customersRef = firebase
       .database()
       .ref("customers")
       .orderByKey();

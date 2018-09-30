@@ -7,7 +7,7 @@ import YAxis from "recharts/lib/cartesian/YAxis";
 import CartesianGrid from "recharts/lib/cartesian/CartesianGrid";
 import Tooltip from "recharts/lib/component/Tooltip";
 import Legend from "recharts/lib/component/Legend";
-import fire from "../../utils/fire";
+import firebase from "../../config/firebase";
 
 class OrderCountSummaryChart extends React.Component {
   constructor(props) {
@@ -23,7 +23,7 @@ class OrderCountSummaryChart extends React.Component {
   }
 
   getData = () => {
-    fire
+    firebase
       .database()
       .ref("orderSummaries")
       .orderByKey()

@@ -2,8 +2,8 @@ import React from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import fire from "../../utils/fire";
 import MealCard from "../../components/MealCard";
+import firebase from "../../config/firebase";
 
 export default class Orders extends React.Component {
   constructor(props) {
@@ -21,7 +21,7 @@ export default class Orders extends React.Component {
   getData = async () => {
     const orders = [];
     let parentOrderKey = null;
-    await fire
+    await firebase
       .database()
       .ref("orders")
       .orderByKey()
@@ -30,14 +30,16 @@ export default class Orders extends React.Component {
         parentOrderKey = snapshot.key;
       });
 
-    await fire
+    await firebase
       .database()
       .ref(`orders/${parentOrderKey}`)
       .orderByChild("orderDate")
       .on("child_added", snapshot => {
         const data = snapshot.val();
         const transactionId = snapshot.key;
-        let customerRef = fire.database().ref(`customers/${data.customerKey}`);
+        let customerRef = firebase
+          .database()
+          .ref(`customers/${data.customerKey}`);
         customerRef.once("value").then(customerSnapshot => {
           const customer = customerSnapshot.val();
           const { name, phone, email, firstTransactionId } = customer;

@@ -1,5 +1,5 @@
 import React from "react";
-import fire from "../../utils/fire";
+import firebase from "../../config/firebase";
 import { encodeAsFirebaseKey } from "../../utils/firebaseUtils";
 
 export default class CustomerDetail extends React.Component {
@@ -21,7 +21,7 @@ export default class CustomerDetail extends React.Component {
 
   getData = key => {
     const encodedKey = encodeAsFirebaseKey(key);
-    fire
+    firebase
       .database()
       .ref(`customers/${encodedKey}`)
       .once("value")

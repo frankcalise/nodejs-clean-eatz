@@ -8,7 +8,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import fire from "../../utils/fire";
+import firebase from "../../config/firebase";
 
 const propTypes = {
   classes: PropTypes.object.isRequired
@@ -49,7 +49,7 @@ class OrdersGroupedBySatellite extends React.Component {
 
   runReport = async () => {
     let orderKey = null;
-    await fire
+    await firebase
       .database()
       .ref("orders")
       .orderByKey()
@@ -58,7 +58,7 @@ class OrdersGroupedBySatellite extends React.Component {
         orderKey = snapshot.key;
       });
 
-    await fire
+    await firebase
       .database()
       .ref(`orders/${orderKey}`)
       .orderByChild("satellite")
@@ -67,7 +67,9 @@ class OrdersGroupedBySatellite extends React.Component {
         const item = snapshot.val();
         item.key = snapshot.key;
 
-        let customerRef = fire.database().ref(`customers/${item.customerKey}`);
+        let customerRef = firebase
+          .database()
+          .ref(`customers/${item.customerKey}`);
         customerRef.once("value").then(customerSnapshot => {
           const customer = customerSnapshot.val();
           const { name, phone, email } = customer;

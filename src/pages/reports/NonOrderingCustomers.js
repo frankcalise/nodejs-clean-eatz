@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import moment from "moment";
 import EnhancedTableHead from "../../components/EnhancedTableHead";
-import fire from "../../utils/fire";
+import firebase from "../../config/firebase";
 
 const propTypes = {
   classes: PropTypes.object.isRequired
@@ -99,7 +99,7 @@ class NonOrderingCustomers extends React.Component {
 
   runReport = () => {
     const { daysSinceLastOrder } = this.state;
-    fire
+    firebase
       .database()
       .ref("customers")
       .orderByKey()

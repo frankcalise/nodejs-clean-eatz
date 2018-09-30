@@ -7,7 +7,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import fire from "../../utils/fire";
+import firebase from "../../config/firebase";
 
 const propTypes = {
   classes: PropTypes.object.isRequired
@@ -37,7 +37,7 @@ class CurrentMealPlanTable extends React.Component {
   }
 
   getData = () => {
-    fire
+    firebase
       .database()
       .ref("orderSummaries")
       .orderByKey()

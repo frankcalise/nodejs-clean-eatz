@@ -1,5 +1,5 @@
 import React from "react";
-import fire from "../../utils/fire";
+import firebase from "../../config/firebase";
 import { decodeFirebaseKey, snapshotToArray } from "../../utils/firebaseUtils";
 
 export default class MealsByMenuDate extends React.Component {
@@ -16,7 +16,7 @@ export default class MealsByMenuDate extends React.Component {
   }
 
   getData = () => {
-    fire
+    firebase
       .database()
       .ref(`mealsByMenuDate`)
       .once("value")

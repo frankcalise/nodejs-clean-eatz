@@ -4,7 +4,7 @@ import Radar from "recharts/lib/polar/Radar";
 import PolarGrid from "recharts/lib/polar/PolarGrid";
 import PolarAngleAxis from "recharts/lib/polar/PolarAngleAxis";
 import PolarRadiusAxis from "recharts/lib/polar/PolarRadiusAxis";
-import fire from "../../utils/fire";
+import firebase from "../../config/firebase";
 
 export default class MealPlanRadarChart extends React.Component {
   constructor(props) {
@@ -20,7 +20,7 @@ export default class MealPlanRadarChart extends React.Component {
   }
 
   getData = () => {
-    fire
+    firebase
       .database()
       .ref("orderSummaries")
       .orderByKey()
