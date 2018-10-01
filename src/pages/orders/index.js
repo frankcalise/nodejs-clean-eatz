@@ -76,11 +76,21 @@ export default class Orders extends React.Component {
       })
       .reverse();
 
+    let totalNumMeals = 0;
+    this.state.data.map(x => {
+      let orderNumMeals = 0;
+      x.meals.map(y => {
+        return (orderNumMeals += y.qty);
+      });
+      return (totalNumMeals += orderNumMeals);
+    });
+
     return (
       <React.Fragment>
         <CssBaseline />
-        <Typography variant="display1" gutterBottom>
-          Meal Plan Orders
+        <Typography variant="display1">Meal Plan Orders</Typography>
+        <Typography variant="subheading" gutterBottom>
+          {orders.length} orders, {totalNumMeals} meals
         </Typography>
         <Grid container spacing={24}>
           {orders}
