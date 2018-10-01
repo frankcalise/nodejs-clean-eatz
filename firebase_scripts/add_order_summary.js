@@ -1,14 +1,18 @@
+const admin = require("firebase-admin");
 const fbConfig = require("../firebase_config.json");
-const firebase = require("firebase");
+const serviceAccount = require("../service_account.json");
 const fs = require("fs");
 const moment = require("moment");
 
-firebase.initializeApp(fbConfig);
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: fbConfig.databaseURL
+});
 
 const writeSummaryData = (summary, orderId) => {
   const { orderCount, numMeals, total, tips, meals, menuDate } = summary;
 
-  firebase
+  admin
     .database()
     .ref(`orderSummaries/${orderId}`)
     .set({

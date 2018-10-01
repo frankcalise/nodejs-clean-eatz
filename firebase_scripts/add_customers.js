@@ -1,18 +1,18 @@
+const admin = require("firebase-admin");
 const fbConfig = require("../firebase_config.json");
+const serviceAccount = require("../service_account.json");
 const fbUtils = require("../utils/firebase_utils");
-const firebase = require("firebase");
+// const firebase = require("firebase");
 const fs = require("fs");
 const moment = require("moment");
 
-const config = {
-  apiKey: fbConfig.apiKey,
-  authDomain: fbConfig.authDomain,
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
   databaseURL: fbConfig.databaseURL
-};
-firebase.initializeApp(config);
+});
 
 const checkCustomerExistsByKey = key => {
-  return firebase
+  return admin
     .database()
     .ref("customers/" + key)
     .once("value")
@@ -30,7 +30,7 @@ const writeCustomerData = (
   orderDate,
   lastTransactionId
 ) => {
-  firebase
+  admin
     .database()
     .ref("customers/" + key)
     .set({
@@ -52,7 +52,7 @@ const updateLastOrderData = (
   orderDate,
   lastTransactionId
 ) => {
-  firebase
+  admin
     .database()
     .ref("customers/" + key)
     .update({
@@ -63,7 +63,7 @@ const updateLastOrderData = (
 };
 
 const updateOrdersForCustomer = (key, orderId, transactionId) => {
-  firebase
+  admin
     .database()
     .ref(`customers/${key}/orders/${orderId}`)
     .set(transactionId);
@@ -85,7 +85,7 @@ const writeOrderData = (item, customerKey) => {
     satellitePickUp
   } = item;
 
-  firebase
+  admin
     .database()
     .ref(`orders/${orderId}/${transactionId}`)
     .set({
@@ -119,6 +119,7 @@ if (!orders) {
 }
 
 orders.forEach(item => {
+  console.log(item);
   const customer = item.customer;
   const customerKey = fbUtils.encodeAsFirebaseKey(customer.email);
 

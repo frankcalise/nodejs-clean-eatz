@@ -3,6 +3,7 @@ meals_summary.json
 orders.json
 credentials.json
 firebase_config.json
+service_account.json
 
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 

@@ -9,6 +9,7 @@
     "@material-ui/icons": "^3.0.1",
     "cheerio": "^1.0.0-rc.2",
     "firebase": "^5.4.2",
+    "firebase-admin": "^6.0.0",
     "fs": "0.0.1-security",
     "moment": "^2.22.2",
     "react": "^16.4.2",
