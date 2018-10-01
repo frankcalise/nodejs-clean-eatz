@@ -158,7 +158,8 @@ class FirstTimeCustomers extends React.Component {
           First Time Customers
         </Typography>
         <Typography variant="subheading" gutterBottom>
-          Menu of {moment(this.state.menuDate).format("MM/DD/YYYY")}
+          Menu of {moment(this.state.menuDate).format("MM/DD/YYYY")},{" "}
+          {rows.length} new customers
         </Typography>
 
         <Paper className={classes.root}>
