@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -11,8 +12,18 @@ import LockIcon from "@material-ui/icons/LockOutlined";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
-import firebase, { Auth } from "../../config/firebase";
+import firebase from "../../config/firebase";
 import { decodeFirebaseKey } from "../../utils/firebaseUtils";
+import { authOperations } from "../../state/auth";
+
+const getActions = dispatch => {
+  return {
+    signIn: (email, password) =>
+      dispatch(authOperations.signIn(email, password)),
+    registerUser: (email, password) =>
+      dispatch(authOperations.registerUser(email, password))
+  };
+};
 
 const styles = theme => ({
   layout: {
@@ -91,30 +102,14 @@ class SignIn extends React.Component {
       const user = allowedUsers.find(x => x.email === email);
       if (user.uid === true) {
         // need to register
-        Auth.createUserWithEmailAndPassword(email, password).then(
-          payload => {
-            const { uid } = payload;
-            console.log(payload);
-            // do firebase set uid in allowedUsers
-          },
-          error => {
-            this.setState({ error: error.message });
-            return;
-          }
-        );
+        this.props.registerUser(email, password);
       }
+
       // process the login
-      Auth.signInWithEmailAndPassword(email, password).then(
-        payload => {
-          // dispatch({ type: "LOGIN", payload });
-          console.log(payload);
-        },
-        error => {
-          // dispatch({ type: "LOGIN",k error });
-          this.setState({ error: error.message });
-          return;
-        }
-      );
+      this.props.signIn(email, password);
+
+      // do error checking before redirecting
+      this.props.history.push("/");
     }
   };
 
@@ -190,4 +185,7 @@ SignIn.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(SignIn);
+export default connect(
+  null,
+  getActions
+)(withStyles(styles)(SignIn));

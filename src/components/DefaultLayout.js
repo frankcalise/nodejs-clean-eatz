@@ -1,5 +1,6 @@
 import React from "react";
 import { Route } from "react-router-dom";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
@@ -11,11 +12,18 @@ import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import NotificationsIcon from "@material-ui/icons/Notifications";
+import NotificationsNoneIcon from "@material-ui/icons/NotificationsNone";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { mainListItems, secondaryListItems } from "../utils/listItems";
+import { authOperations } from "../state/auth";
+
+const getActions = dispatch => {
+  return {
+    signOut: () => dispatch(authOperations.signOut())
+  };
+};
 
 const drawerWidth = 240;
 
@@ -144,9 +152,10 @@ class DefaultLayout extends React.Component {
                 Dashboard
               </Typography>
               <IconButton color="inherit">
-                <Badge badgeContent={4} color="secondary">
-                  <NotificationsIcon />
-                </Badge>
+                <NotificationsNoneIcon />
+              </IconButton>
+              <IconButton color="inherit" onClick={this.props.signOut}>
+                <AccountCircleIcon />
               </IconButton>
             </Toolbar>
           </AppBar>
@@ -187,4 +196,7 @@ DefaultLayout.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(DefaultLayout);
+export default connect(
+  null,
+  getActions
+)(withStyles(styles)(DefaultLayout));
