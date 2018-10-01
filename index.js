@@ -82,11 +82,16 @@ const parseOrders = body => {
     if (isSatellite) {
       console.log("sat pick up");
       // satellite pick up
-      const satellitePickUpNode = $("p", item).eq(0);
-      satellitePickUp = parseSatellitePickUp(satellitePickUpNode);
 
-      // change index for proper customer parsing
-      pIndex = 2;
+      let satellitePickUpNode = $("p", item).eq(0);
+      if (satellitePickUpNode.text().indexOf("BEEN COMPLETED") >= 0) {
+        satellitePickUpNode = $("p", item).eq(1);
+        pIndex = 3;
+      } else {
+        // change index for proper customer parsing
+        pIndex = 2;
+      }
+      satellitePickUp = parseSatellitePickUp(satellitePickUpNode);
     }
 
     const customerBlock = $("p", item)
