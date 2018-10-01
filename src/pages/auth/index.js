@@ -4,15 +4,14 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+import FormLabel from "@material-ui/core/FormLabel";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import LockIcon from "@material-ui/icons/LockOutlined";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
-import firebase from "../../config/firebase";
+import firebase, { Auth } from "../../config/firebase";
 import { decodeFirebaseKey } from "../../utils/firebaseUtils";
 
 const styles = theme => ({
@@ -53,7 +52,10 @@ class SignIn extends React.Component {
     super(props);
 
     this.state = {
-      allowedUsers: null
+      error: null,
+      allowedUsers: null,
+      email: "",
+      password: ""
     };
   }
 
@@ -69,9 +71,59 @@ class SignIn extends React.Component {
       .once("value")
       .then(snapshot => {
         const items = snapshot.val();
-        const allowedUsers = Object.keys(items).map(x => decodeFirebaseKey(x));
+        const allowedUsers = Object.keys(items).map(x => {
+          const value = items[x];
+          const key = decodeFirebaseKey(x);
+          return { email: key, uid: value };
+        });
         this.setState({ allowedUsers });
       });
+  };
+
+  onSignIn = e => {
+    e.preventDefault();
+    const { email, password, allowedUsers } = this.state;
+    const emails = allowedUsers.map(x => x.email);
+
+    if (emails.indexOf(email) < 0) {
+      this.setState({ error: "This email is not authorized to sign in." });
+    } else {
+      const user = allowedUsers.find(x => x.email === email);
+      if (user.uid === true) {
+        // need to register
+        Auth.createUserWithEmailAndPassword(email, password).then(
+          payload => {
+            const { uid } = payload;
+            console.log(payload);
+            // do firebase set uid in allowedUsers
+          },
+          error => {
+            this.setState({ error: error.message });
+            return;
+          }
+        );
+      }
+      // process the login
+      Auth.signInWithEmailAndPassword(email, password).then(
+        payload => {
+          // dispatch({ type: "LOGIN", payload });
+          console.log(payload);
+        },
+        error => {
+          // dispatch({ type: "LOGIN",k error });
+          this.setState({ error: error.message });
+          return;
+        }
+      );
+    }
+  };
+
+  onChangeEmail = event => {
+    this.setState({ email: event.target.value, error: null });
+  };
+
+  onChangePassword = event => {
+    this.setState({ password: event.target.value, error: null });
   };
 
   render() {
@@ -89,7 +141,14 @@ class SignIn extends React.Component {
             <form className={classes.form}>
               <FormControl margin="normal" required fullWidth>
                 <InputLabel htmlFor="email">Email Address</InputLabel>
-                <Input id="email" name="email" autoComplete="email" autoFocus />
+                <Input
+                  id="email"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  onChange={this.onChangeEmail}
+                  value={this.state.email || ""}
+                />
               </FormControl>
               <FormControl margin="normal" required fullWidth>
                 <InputLabel htmlFor="password">Password</InputLabel>
@@ -98,18 +157,24 @@ class SignIn extends React.Component {
                   type="password"
                   id="password"
                   autoComplete="current-password"
+                  onChange={this.onChangePassword}
+                  value={this.state.password || ""}
                 />
               </FormControl>
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
+              {this.state.error && (
+                <FormLabel error={true}>{this.state.error}</FormLabel>
+              )}
               <Button
                 type="submit"
                 fullWidth
                 variant="raised"
                 color="primary"
                 className={classes.submit}
+                onClick={this.onSignIn}
+                disabled={
+                  this.state.email.length === 0 ||
+                  this.state.password.length === 0
+                }
               >
                 Sign in
               </Button>
