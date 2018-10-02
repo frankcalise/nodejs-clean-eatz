@@ -12,12 +12,14 @@ import LockIcon from "@material-ui/icons/LockOutlined";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
-import firebase from "../../config/firebase";
-import { decodeFirebaseKey } from "../../utils/firebaseUtils";
 import { authOperations } from "../../state/auth";
 
 const getState = state => {
-  return { auth: state.auth.user };
+  return {
+    auth: state.auth.user,
+    error: state.auth.error,
+    allowedUsers: state.auth.allowedUsers
+  };
 };
 
 const getActions = dispatch => {
@@ -25,7 +27,8 @@ const getActions = dispatch => {
     signIn: (email, password) =>
       dispatch(authOperations.signIn(email, password)),
     registerUser: (email, password) =>
-      dispatch(authOperations.registerUser(email, password))
+      dispatch(authOperations.registerUser(email, password)),
+    fetchAllowedUsers: () => dispatch(authOperations.fetchAllowedUsers())
   };
 };
 
@@ -63,12 +66,14 @@ const styles = theme => ({
 });
 
 class SignIn extends React.Component {
+  static contextTypes = {
+    router: PropTypes.object
+  };
+
   constructor(props) {
     super(props);
 
     this.state = {
-      error: null,
-      allowedUsers: null,
       email: "",
       password: ""
     };
@@ -80,30 +85,14 @@ class SignIn extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.getData();
+  componentWillMount() {
+    this.props.fetchAllowedUsers();
   }
-
-  getData = () => {
-    firebase
-      .database()
-      .ref("allowedUsers")
-      .orderByKey()
-      .once("value")
-      .then(snapshot => {
-        const items = snapshot.val();
-        const allowedUsers = Object.keys(items).map(x => {
-          const value = items[x];
-          const key = decodeFirebaseKey(x);
-          return { email: key, uid: value };
-        });
-        this.setState({ allowedUsers });
-      });
-  };
 
   onSignIn = e => {
     e.preventDefault();
-    const { email, password, allowedUsers } = this.state;
+    const { email, password } = this.state;
+    const { allowedUsers } = this.props;
     const emails = allowedUsers.map(x => x.email);
 
     if (emails.indexOf(email) < 0) {
@@ -119,7 +108,7 @@ class SignIn extends React.Component {
       this.props.signIn(email, password);
 
       // do error checking before redirecting
-      this.props.history.push("/");
+      // this.props.history.push("/");
     }
   };
 
@@ -166,8 +155,8 @@ class SignIn extends React.Component {
                   value={this.state.password || ""}
                 />
               </FormControl>
-              {this.state.error && (
-                <FormLabel error={true}>{this.state.error}</FormLabel>
+              {this.props.error && (
+                <FormLabel error={true}>{this.props.error}</FormLabel>
               )}
               <Button
                 type="submit"
@@ -196,6 +185,6 @@ SignIn.propTypes = {
 };
 
 export default connect(
-  null,
+  getState,
   getActions
 )(withStyles(styles)(SignIn));

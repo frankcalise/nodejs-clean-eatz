@@ -1,10 +1,14 @@
 import firebase, { Auth } from "../../config/firebase";
-import { encodeAsFirebaseKey } from "../../utils/firebaseUtils";
+import {
+  encodeAsFirebaseKey,
+  decodeFirebaseKey
+} from "../../utils/firebaseUtils";
 import * as types from "./types";
 
 export const fetchUser = () => dispatch => {
   Auth.onAuthStateChanged(user => {
     const payload = user || null;
+    console.log("fetchUser", user);
     dispatch({ type: types.FETCH_USER, payload });
   });
 };
@@ -12,8 +16,6 @@ export const fetchUser = () => dispatch => {
 export const signIn = (email, password) => dispatch => {
   Auth.signInWithEmailAndPassword(email, password).then(
     payload => {
-      // dispatch({ type: "LOGIN", payload });
-      console.log(payload);
       dispatch(fetchUser());
     },
     error => {
@@ -56,4 +58,32 @@ export const clearError = () => dispatch => {
 
 export const setError = payload => dispatch => {
   dispatch({ type: types.SET_ERROR, payload });
+};
+
+export const fetchAllowedUsers = () => {
+  return dispatch => {
+    return firebase
+      .database()
+      .ref("allowedUsers")
+      .orderByKey()
+      .once("value")
+      .then(snapshot => {
+        const items = snapshot.val();
+        const allowedUsers = Object.keys(items).map(x => {
+          const value = items[x];
+          const key = decodeFirebaseKey(x);
+          return { email: key, uid: value };
+        });
+
+        return allowedUsers;
+      })
+      .then(allowedUsers => {
+        dispatch({ type: types.FETCH_ALLOWED_USERS, allowedUsers });
+      })
+      .catch(err => {
+        dispatch({ type: types.SET_ERROR, payload: err });
+        console.log(err);
+        return err;
+      });
+  };
 };

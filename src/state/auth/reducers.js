@@ -3,7 +3,8 @@ import * as types from "./types";
 
 const initialState = {
   user: null,
-  error: null
+  error: null,
+  allowedUsers: null
 };
 
 const authReducer = createReducer(initialState)({
@@ -15,6 +16,11 @@ const authReducer = createReducer(initialState)({
   },
   [types.SET_ERROR]: (state, action) => {
     return { ...state, error: action.payload };
+  },
+  [types.FETCH_ALLOWED_USERS]: (state, action) => {
+    console.log(action);
+    const { allowedUsers } = action;
+    return { ...state, allowedUsers };
   }
 });
 

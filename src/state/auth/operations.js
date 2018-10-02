@@ -4,7 +4,16 @@ import {
   signOut,
   registerUser,
   clearError,
-  setError
+  setError,
+  fetchAllowedUsers
 } from "./actions";
 
-export { fetchUser, signIn, signOut, registerUser, clearError, setError };
+export {
+  fetchUser,
+  signIn,
+  signOut,
+  registerUser,
+  clearError,
+  setError,
+  fetchAllowedUsers
+};
