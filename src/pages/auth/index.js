@@ -16,6 +16,10 @@ import firebase from "../../config/firebase";
 import { decodeFirebaseKey } from "../../utils/firebaseUtils";
 import { authOperations } from "../../state/auth";
 
+const getState = state => {
+  return { auth: state.auth.user };
+};
+
 const getActions = dispatch => {
   return {
     signIn: (email, password) =>
@@ -68,6 +72,12 @@ class SignIn extends React.Component {
       email: "",
       password: ""
     };
+  }
+
+  componentWillUpdate(nextProps) {
+    if (nextProps.auth) {
+      this.context.router.history.push("/");
+    }
   }
 
   componentDidMount() {
