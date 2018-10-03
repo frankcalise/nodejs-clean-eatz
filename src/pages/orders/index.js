@@ -1,74 +1,45 @@
 import React from "react";
+import { connect } from "react-redux";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import MealCard from "../../components/MealCard";
-import firebase from "../../config/firebase";
+import WithLoader from "../../components/WithLoader";
+import { orderOperations } from "../../state/orders";
 
-export default class Orders extends React.Component {
-  constructor(props) {
-    super(props);
+const getState = state => {
+  return {
+    orders: state.orders
+  };
+};
 
-    this.state = {
-      data: []
-    };
-  }
+const getActions = dispatch => {
+  return {
+    fetchOrders: () => dispatch(orderOperations.fetchOrders())
+  };
+};
 
-  componentDidMount() {
-    this.getData();
-  }
-
-  getData = async () => {
-    let parentOrderKey = null;
-    await firebase
-      .database()
-      .ref("orders")
-      .orderByKey()
-      .limitToLast(1)
-      .once("child_added", snapshot => {
-        parentOrderKey = snapshot.key;
-      });
-
-    await firebase
-      .database()
-      .ref(`orders/${parentOrderKey}`)
-      .orderByChild("orderDate")
-      .on("child_added", snapshot => {
-        const data = snapshot.val();
-        const transactionId = snapshot.key;
-        let customerRef = firebase
-          .database()
-          .ref(`customers/${data.customerKey}`);
-        customerRef.once("value").then(customerSnapshot => {
-          const customer = customerSnapshot.val();
-          const { name, phone, email, firstTransactionId } = customer;
-          let firstTimeCustomer = false;
-          if (firstTransactionId) {
-            if (firstTransactionId === transactionId) {
-              firstTimeCustomer = true;
-            }
-          }
-          const order = {
-            ...data,
-            transactionId,
-            customer: {
-              name,
-              phone,
-              email
-            },
-            firstTimeCustomer
-          };
-
-          this.setState({ data: this.state.data.concat([order]) });
-        });
-      });
+class Orders extends React.Component {
+  state = {
+    loaded: false
   };
 
+  componentDidMount() {
+    Promise.all([this.props.fetchOrders()])
+      .then(() => {
+        this.setState({ loaded: true });
+      })
+      .catch(err => {
+        console.error(err);
+        this.setState({ loaded: true });
+      });
+  }
+
   render() {
-    const orders = this.state.data
+    const orders = this.props.orders
       .map(order => {
         return (
-          <Grid item xs key={order.transactionId}>
+          <Grid item xs key={order.transactionKey}>
             <MealCard order={order} />
           </Grid>
         );
@@ -76,7 +47,7 @@ export default class Orders extends React.Component {
       .reverse();
 
     let totalNumMeals = 0;
-    this.state.data.map(x => {
+    this.props.orders.map(x => {
       let orderNumMeals = 0;
       x.meals.map(y => {
         return (orderNumMeals += y.qty);
@@ -85,7 +56,7 @@ export default class Orders extends React.Component {
     });
 
     return (
-      <React.Fragment>
+      <WithLoader condition={this.state.loaded} message="Loading Orders">
         <CssBaseline />
         <Typography variant="display1">Meal Plan Orders</Typography>
         <Typography variant="subheading" gutterBottom>
@@ -94,7 +65,12 @@ export default class Orders extends React.Component {
         <Grid container spacing={24}>
           {orders}
         </Grid>
-      </React.Fragment>
+      </WithLoader>
     );
   }
 }
+
+export default connect(
+  getState,
+  getActions
+)(Orders);

@@ -1,11 +1,12 @@
 import { createReducer } from "../utils";
 import * as types from "./types";
 
-const initialState = null;
+const initialState = [];
 
 const ordersReducer = createReducer(initialState)({
   [types.FETCH_ORDERS]: (state, action) => {
-    return action.orders || null;
+    console.log(action);
+    return action.orders || [];
   }
 });
 
