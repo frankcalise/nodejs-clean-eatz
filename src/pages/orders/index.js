@@ -19,7 +19,6 @@ export default class Orders extends React.Component {
   }
 
   getData = async () => {
-    const orders = [];
     let parentOrderKey = null;
     await firebase
       .database()
