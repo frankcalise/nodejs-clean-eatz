@@ -5,6 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
+import WithLoader from "../../components/WithLoader";
 import OrderCountSummaryChart from "./OrderCountSummaryChart";
 import CurrentMealPlanTable from "./CurrentMealPlanTable";
 import MealPlanRadarChart from "./MealPlanRadarChart";
@@ -28,17 +29,17 @@ const styles = theme => ({
 
 class Dashboard extends React.Component {
   state = {
-    loading: true
+    loaded: false
   };
 
   componentDidMount() {
     Promise.all([this.props.fetchOrderSummaries()])
       .then(() => {
-        this.setState({ loading: false });
+        this.setState({ loaded: true });
       })
       .catch(err => {
         console.error(err);
-        this.setState({ loading: false });
+        this.setState({ loaded: true });
       });
   }
 
@@ -46,7 +47,7 @@ class Dashboard extends React.Component {
     const { classes } = this.props;
 
     return (
-      <React.Fragment>
+      <WithLoader condition={this.state.loaded} message="Loading Dashboard...">
         <CssBaseline />
         <Typography variant="display1" gutterBottom>
           Orders at a Glance
@@ -58,7 +59,7 @@ class Dashboard extends React.Component {
           Current Meal Plan
         </Typography>
         <Grid container spacing={24}>
-          <Grid item xs={16} sm={8}>
+          <Grid item xs={12} sm={8}>
             <div className={classes.tableContainer}>
               <CurrentMealPlanTable />
             </div>
@@ -69,7 +70,7 @@ class Dashboard extends React.Component {
             </div>
           </Grid>
         </Grid>
-      </React.Fragment>
+      </WithLoader>
     );
   }
 }

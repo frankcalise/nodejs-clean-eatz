@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux";
 import ResponsiveContainer from "recharts/lib/component/ResponsiveContainer";
 import LineChart from "recharts/lib/chart/LineChart";
 import Line from "recharts/lib/cartesian/Line";
@@ -7,50 +8,19 @@ import YAxis from "recharts/lib/cartesian/YAxis";
 import CartesianGrid from "recharts/lib/cartesian/CartesianGrid";
 import Tooltip from "recharts/lib/component/Tooltip";
 import Legend from "recharts/lib/component/Legend";
-import firebase from "../../config/firebase";
+
+const getState = state => {
+  return {
+    data: state.orderSummaries
+  };
+};
 
 class OrderCountSummaryChart extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: []
-    };
-  }
-
-  componentWillMount() {
-    this.getData();
-  }
-
-  getData = () => {
-    firebase
-      .database()
-      .ref("orderSummaries")
-      .orderByKey()
-      .once("value")
-      .then(snapshot => {
-        const data = [];
-
-        snapshot.forEach(childSnapshot => {
-          const summary = childSnapshot.val();
-          const { menuDate, numMeals, orderCount } = summary;
-
-          data.push({
-            menuDate,
-            numMeals,
-            orderCount
-          });
-        });
-
-        this.setState({ data });
-      });
-  };
-
   render() {
     return (
       // 99% per https://github.com/recharts/recharts/issues/172
       <ResponsiveContainer width="99%" height={320}>
-        <LineChart data={this.state.data}>
+        <LineChart data={this.props.data}>
           <XAxis dataKey="menuDate" />
           <YAxis />
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -75,4 +45,4 @@ class OrderCountSummaryChart extends React.Component {
   }
 }
 
-export default OrderCountSummaryChart;
+export default connect(getState)(OrderCountSummaryChart);

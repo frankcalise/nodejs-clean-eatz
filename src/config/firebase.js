@@ -7,4 +7,6 @@ firebase.initializeApp(fbConfig);
 const Auth = firebase.auth();
 
 export default firebase;
-export { Auth };
+const db = firebase.database();
+const orderSummariesRef = db.ref("orderSummaries");
+export { Auth, orderSummariesRef };

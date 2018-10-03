@@ -1,11 +1,9 @@
-import firebase from "../../config/firebase";
+import { orderSummariesRef } from "../../config/firebase";
 import * as types from "./types";
 
 export const fetchOrderSummaries = () => {
   return dispatch => {
-    return firebase
-      .database()
-      .ref("orderSummaries")
+    return orderSummariesRef
       .orderByKey()
       .once("value")
       .then(snapshot => {
@@ -19,8 +17,7 @@ export const fetchOrderSummaries = () => {
           // not all orderSummary items have meals key
           if (meals) {
             Object.keys(meals).forEach(mealKey => {
-              const { total } = meals[mealKey];
-              mealsData.push({ name: mealKey, total });
+              mealsData.push({ name: mealKey, ...meals[mealKey] });
             });
           }
 
@@ -30,8 +27,6 @@ export const fetchOrderSummaries = () => {
             orderCount,
             meals: mealsData
           });
-
-          console.log(menuDate);
         });
 
         return orderSummaries;
@@ -41,7 +36,6 @@ export const fetchOrderSummaries = () => {
       })
       .catch(err => {
         // dispatch({ type: types.SET_ERROR, payload: err });
-        console.log(err);
         return err;
       });
   };

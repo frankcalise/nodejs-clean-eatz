@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import { withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -7,10 +8,16 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import firebase from "../../config/firebase";
+import { getLatestOrderSummary } from "../../state/orderSummaries/selectors";
 
 const propTypes = {
   classes: PropTypes.object.isRequired
+};
+
+const getState = state => {
+  return {
+    data: getLatestOrderSummary(state)
+  };
 };
 
 const styles = {
@@ -24,67 +31,8 @@ const styles = {
 };
 
 class CurrentMealPlanTable extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: []
-    };
-  }
-
-  componentDidMount() {
-    this.getData();
-  }
-
-  getData = () => {
-    firebase
-      .database()
-      .ref("orderSummaries")
-      .orderByKey()
-      .limitToLast(1)
-      .once("value")
-      .then(snapshot => {
-        const data = [];
-
-        snapshot.forEach(childSnapshot => {
-          const summary = childSnapshot.val();
-          const { meals } = summary;
-
-          Object.keys(meals).forEach(mealKey => {
-            const {
-              total,
-              standard,
-              extraProtein,
-              glutenFree,
-              halfCarb,
-              noCarb
-              // epGf,
-              // epHc,
-              // epNc,
-              // gfHc,
-              // gfNc,
-              // epGfNc,
-              // epGfHc
-            } = meals[mealKey];
-
-            data.push({
-              name: mealKey,
-              total,
-              standard,
-              extraProtein,
-              glutenFree,
-              halfCarb,
-              noCarb
-            });
-          });
-        });
-
-        this.setState({ data });
-      });
-  };
-
   render() {
-    const { classes } = this.props;
+    const { classes, data } = this.props;
 
     return (
       <Paper className={classes.root}>
@@ -101,7 +49,7 @@ class CurrentMealPlanTable extends React.Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.state.data.map(n => {
+            {data.meals.map(n => {
               return (
                 <TableRow key={n.name}>
                   <TableCell component="th" scope="row">
@@ -125,4 +73,4 @@ class CurrentMealPlanTable extends React.Component {
 
 CurrentMealPlanTable.propTypes = propTypes;
 
-export default withStyles(styles)(CurrentMealPlanTable);
+export default connect(getState)(withStyles(styles)(CurrentMealPlanTable));

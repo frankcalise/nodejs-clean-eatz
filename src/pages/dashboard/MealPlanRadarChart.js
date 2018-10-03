@@ -1,57 +1,24 @@
 import React from "react";
+import { connect } from "react-redux";
 import RadarChart from "recharts/lib/chart/RadarChart";
 import Radar from "recharts/lib/polar/Radar";
 import PolarGrid from "recharts/lib/polar/PolarGrid";
 import PolarAngleAxis from "recharts/lib/polar/PolarAngleAxis";
 import PolarRadiusAxis from "recharts/lib/polar/PolarRadiusAxis";
-import firebase from "../../config/firebase";
+import { getLatestOrderSummary } from "../../state/orderSummaries/selectors";
 
-export default class MealPlanRadarChart extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: []
-    };
-  }
-
-  componentDidMount() {
-    this.getData();
-  }
-
-  getData = () => {
-    firebase
-      .database()
-      .ref("orderSummaries")
-      .orderByKey()
-      .limitToLast(1)
-      .once("value")
-      .then(snapshot => {
-        const data = [];
-
-        snapshot.forEach(childSnapshot => {
-          const summary = childSnapshot.val();
-          const { meals } = summary;
-
-          Object.keys(meals).forEach(mealKey => {
-            const { total } = meals[mealKey];
-
-            data.push({
-              name: mealKey,
-              total
-            });
-          });
-        });
-
-        this.setState({ data });
-      });
+const getState = state => {
+  return {
+    data: getLatestOrderSummary(state)
   };
+};
 
+class MealPlanRadarChart extends React.Component {
   render() {
-    const { data } = this.state;
+    const { meals } = this.props.data;
 
     return (
-      <RadarChart width={500} height={320} data={data}>
+      <RadarChart width={500} height={320} data={meals}>
         <PolarGrid />
         <PolarAngleAxis dataKey="name" />
         <PolarRadiusAxis domain={[0, 150]} />
@@ -66,3 +33,5 @@ export default class MealPlanRadarChart extends React.Component {
     );
   }
 }
+
+export default connect(getState)(MealPlanRadarChart);
