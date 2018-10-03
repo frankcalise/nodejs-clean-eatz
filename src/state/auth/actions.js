@@ -8,7 +8,6 @@ import * as types from "./types";
 export const fetchUser = () => dispatch => {
   Auth.onAuthStateChanged(user => {
     const payload = user || null;
-    console.log("fetchUser", user);
     dispatch({ type: types.FETCH_USER, payload });
   });
 };

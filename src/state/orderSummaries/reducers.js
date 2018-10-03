@@ -5,7 +5,6 @@ const initialState = null;
 
 const orderSummariesReducer = createReducer(initialState)({
   [types.FETCH_ORDER_SUMMARIES]: (state, action) => {
-    console.log(action);
     return action.orderSummaries || null;
   }
 });

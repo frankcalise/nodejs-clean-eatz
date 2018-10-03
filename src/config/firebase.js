@@ -8,5 +8,8 @@ const Auth = firebase.auth();
 
 export default firebase;
 const db = firebase.database();
+const customersRef = db.ref("customers");
 const orderSummariesRef = db.ref("orderSummaries");
-export { Auth, orderSummariesRef };
+const ordersRef = db.ref("orders");
+
+export { Auth, orderSummariesRef, customersRef, ordersRef };
