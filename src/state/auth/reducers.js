@@ -18,7 +18,6 @@ const authReducer = createReducer(initialState)({
     return { ...state, error: action.payload };
   },
   [types.FETCH_ALLOWED_USERS]: (state, action) => {
-    console.log(action);
     const { allowedUsers } = action;
     return { ...state, allowedUsers };
   }
