@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import { withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -8,10 +9,23 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import firebase from "../../config/firebase";
+import WithLoader from "../../components/WithLoader";
+import { getSatelliteOrders } from "../../state/orders/selectors";
+import { fetchOrders } from "../../state/orders/actions";
 
 const propTypes = {
   classes: PropTypes.object.isRequired
+};
+
+const getState = state => {
+  return {
+    orders: state.orders,
+    satelliteOrders: getSatelliteOrders(state.orders)
+  };
+};
+
+const getActions = {
+  fetchOrders
 };
 
 const styles = theme => ({
@@ -35,62 +49,30 @@ const meals = [
 ];
 
 class OrdersGroupedBySatellite extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: []
-    };
-  }
+  state = {
+    loaded: false
+  };
 
   componentDidMount() {
-    this.runReport();
-  }
-
-  runReport = async () => {
-    let orderKey = null;
-    await firebase
-      .database()
-      .ref("orders")
-      .orderByKey()
-      .limitToLast(1)
-      .once("child_added", snapshot => {
-        orderKey = snapshot.key;
-      });
-
-    await firebase
-      .database()
-      .ref(`orders/${orderKey}`)
-      .orderByChild("satellite")
-      .equalTo(true)
-      .on("child_added", snapshot => {
-        const item = snapshot.val();
-        item.key = snapshot.key;
-
-        let customerRef = firebase
-          .database()
-          .ref(`customers/${item.customerKey}`);
-        customerRef.once("value").then(customerSnapshot => {
-          const customer = customerSnapshot.val();
-          const { name, phone, email } = customer;
-
-          const order = {
-            ...item,
-            customer: {
-              name,
-              phone,
-              email
-            }
-          };
-
-          this.setState({ data: this.state.data.concat([order]) });
+    if (this.props.orders.length === 0) {
+      Promise.all([this.props.fetchOrders()])
+        .then(() => {
+          this.setState({ loaded: true });
+        })
+        .catch(err => {
+          console.error(err);
+          this.setState({ loaded: true });
         });
-      });
-  };
+    } else {
+      this.setState({ loaded: true });
+    }
+  }
 
   renderTable = key => {
     const { classes } = this.props;
-    const rows = this.state.data.filter(x => x.satellitePickUp === key);
+    const rows = this.props.satelliteOrders.filter(
+      x => x.satellitePickUp === key
+    );
 
     return (
       <div key={key}>
@@ -141,7 +123,7 @@ class OrdersGroupedBySatellite extends React.Component {
 
   render() {
     // get unique satellite location array
-    const groups = this.state.data
+    const groups = this.props.satelliteOrders
       .map(x => x.satellitePickUp)
       .filter((value, index, self) => {
         return self.indexOf(value) === index;
@@ -161,18 +143,24 @@ class OrdersGroupedBySatellite extends React.Component {
     }
 
     return (
-      <React.Fragment>
+      <WithLoader
+        condition={this.state.loaded}
+        message="Grouping Orders By Satellite Location"
+      >
         <Typography variant="display1">
           Orders Grouped by Satellite Location
         </Typography>
         {groups.map(group => {
           return this.renderTable(group);
         })}
-      </React.Fragment>
+      </WithLoader>
     );
   }
 }
 
 OrdersGroupedBySatellite.propTypes = propTypes;
 
-export default withStyles(styles)(OrdersGroupedBySatellite);
+export default connect(
+  getState,
+  getActions
+)(withStyles(styles)(OrdersGroupedBySatellite));
