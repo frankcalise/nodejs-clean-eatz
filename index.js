@@ -181,7 +181,10 @@ const parseCustomerInfo = text => {
         // Get the email from the Name, Email line
         const idx = value.indexOf(",");
         pairs.name = value.substring(0, idx);
-        pairs.email = value.substring(idx + 1).trim();
+        pairs.email = value
+          .substring(idx + 1)
+          .trim()
+          .toLowerCase();
       } else {
         pairs[kvp.key] = kvp.value;
       }
