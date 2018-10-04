@@ -58,5 +58,5 @@ EnhancedTableHead.propTypes = {
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
   orderBy: PropTypes.string.isRequired,
-  cols: PropTypes.object.isRequired
+  cols: PropTypes.array.isRequired
 };

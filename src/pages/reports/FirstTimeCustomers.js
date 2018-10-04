@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import { withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -9,10 +10,32 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import moment from "moment";
 import EnhancedTableHead from "../../components/EnhancedTableHead";
-import firebase from "../../config/firebase";
+import WithLoader from "../../components/WithLoader";
+import { getFirstTimeCustomers } from "../../state/customers/selectors";
+import { fetchCustomers } from "../../state/customers/actions";
 
 const propTypes = {
   classes: PropTypes.object.isRequired
+};
+
+// TODO move to store as menuDate
+const today = moment();
+let adjWeek = 0;
+if (today.weekday() < 4) {
+  adjWeek = -7;
+}
+const menuDate = moment()
+  .day(-7)
+  .weekday(4)
+  .startOf("day");
+
+const getState = state => ({
+  customers: state.customers,
+  firstTimeCustomers: getFirstTimeCustomers(state.customers, menuDate)
+});
+
+const getActions = {
+  fetchCustomers
 };
 
 const styles = theme => ({
@@ -82,60 +105,28 @@ function getSorting(order, orderBy) {
 }
 
 class FirstTimeCustomers extends React.Component {
-  constructor(props) {
-    super(props);
-
-    const today = moment();
-    let adjWeek = 0;
-    if (today.weekday() < 4) {
-      adjWeek = -7;
-    }
-    const menuDate = moment()
-      .day(adjWeek)
-      .weekday(4)
-      .startOf("day");
-
-    this.state = {
-      menuDate,
-      rows: [],
-      order: "asc",
-      orderBy: "firstOrderDate"
-    };
-  }
+  state = {
+    loaded: false,
+    order: "asc",
+    orderBy: "firstOrderDate"
+  };
 
   componentDidMount() {
-    this.runReport();
-  }
-
-  runReport = () => {
-    firebase
-      .database()
-      .ref("customers")
-      .orderByChild("firstOrderDate")
-      .startAt(this.state.menuDate.valueOf())
-      .once("value")
-      .then(snapshot => {
-        const rows = [];
-
-        snapshot.forEach(childSnapshot => {
-          const customer = childSnapshot.val();
-          const customerKey = childSnapshot.key;
-
-          const { name, phone, email, firstOrderDate } = customer;
-          const momentRef = moment(firstOrderDate);
-
-          rows.push({
-            customerKey,
-            name,
-            phone,
-            email,
-            firstOrderDate: momentRef.format("MM/DD/YYYY hh:mm:ss A")
-          });
-
-          this.setState({ rows });
+    // run get customers if haven't retrieved
+    console.log(this.props);
+    if (this.props.customers.length === 0) {
+      Promise.all([this.props.fetchCustomers()])
+        .then(() => {
+          this.setState({ loaded: true });
+        })
+        .catch(err => {
+          console.error(err);
+          this.setState({ loaded: true });
         });
-      });
-  };
+    } else {
+      this.setState({ loaded: true });
+    }
+  }
 
   handleRequestSort = (event, property) => {
     const orderBy = property;
@@ -149,17 +140,15 @@ class FirstTimeCustomers extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
-    const { rows, order, orderBy } = this.state;
+    const { classes, firstTimeCustomers } = this.props;
+    const { order, orderBy, loaded } = this.state;
 
     return (
-      <React.Fragment>
-        <Typography variant="display1" component="heading">
-          First Time Customers
-        </Typography>
+      <WithLoader condition={loaded} message="Searching First Time Customers">
+        <Typography variant="display1">First Time Customers</Typography>
         <Typography variant="subheading" gutterBottom>
           Menu of {moment(this.state.menuDate).format("MM/DD/YYYY")},{" "}
-          {rows.length} new customers
+          {firstTimeCustomers.length} new customers
         </Typography>
 
         <Paper className={classes.root}>
@@ -171,26 +160,31 @@ class FirstTimeCustomers extends React.Component {
               cols={cols}
             />
             <TableBody>
-              {stableSort(rows, getSorting(order, orderBy)).map(row => {
-                return (
-                  <TableRow key={row.customerKey}>
-                    <TableCell component="th" scope="row">
-                      {row.name}
-                    </TableCell>
-                    <TableCell>{row.firstOrderDate}</TableCell>
-                    <TableCell>{row.email}</TableCell>
-                    <TableCell>{row.phone}</TableCell>
-                  </TableRow>
-                );
-              })}
+              {stableSort(firstTimeCustomers, getSorting(order, orderBy)).map(
+                customer => {
+                  return (
+                    <TableRow key={customer.key}>
+                      <TableCell component="th" scope="row">
+                        {customer.name}
+                      </TableCell>
+                      <TableCell>{customer.firstOrderDate}</TableCell>
+                      <TableCell>{customer.email}</TableCell>
+                      <TableCell>{customer.phone}</TableCell>
+                    </TableRow>
+                  );
+                }
+              )}
             </TableBody>
           </Table>
         </Paper>
-      </React.Fragment>
+      </WithLoader>
     );
   }
 }
 
 FirstTimeCustomers.propTypes = propTypes;
 
-export default withStyles(styles)(FirstTimeCustomers);
+export default connect(
+  getState,
+  getActions
+)(withStyles(styles)(FirstTimeCustomers));
