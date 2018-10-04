@@ -9,7 +9,7 @@ import { getLatestOrderSummary } from "../../state/orderSummaries/selectors";
 
 const getState = state => {
   return {
-    data: getLatestOrderSummary(state)
+    data: getLatestOrderSummary(state.orderSummaries)
   };
 };
 

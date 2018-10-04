@@ -16,7 +16,7 @@ const propTypes = {
 
 const getState = state => {
   return {
-    data: getLatestOrderSummary(state)
+    data: getLatestOrderSummary(state.orderSummaries)
   };
 };
 

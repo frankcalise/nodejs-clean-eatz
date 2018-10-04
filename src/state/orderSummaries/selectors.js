@@ -1,4 +1,7 @@
-export const getLatestOrderSummary = state => {
-  const arr = state.orderSummaries;
-  return arr[arr.length - 1];
+export const getLatestOrderSummary = orderSummaries => {
+  if (orderSummaries.length === 0) {
+    return [];
+  }
+
+  return orderSummaries[orderSummaries.length - 1];
 };

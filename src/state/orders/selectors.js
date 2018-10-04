@@ -1,4 +1,7 @@
-export const getLatestOrder = state => {
-  const arr = state.orders;
-  return arr[arr.length - 1];
+export const getLatestOrder = orders => {
+  if (orders.length === 0) {
+    return [];
+  }
+
+  return orders[orders.length - 1];
 };
