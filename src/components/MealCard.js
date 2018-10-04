@@ -6,6 +6,8 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Chip from "@material-ui/core/Chip";
+import Avatar from "@material-ui/core/Avatar";
+import ClearIcon from "@material-ui/icons/Clear";
 import Typography from "@material-ui/core/Typography";
 
 const styles = theme => ({
@@ -44,7 +46,8 @@ const MealCard = ({ ...props }) => {
     satellite,
     satellitePickUp,
     total,
-    payment
+    payment,
+    missedPickup
   } = order;
   const bull = <span className={classes.bullet}>•</span>;
   const { extraProtein, glutenFree, halfCarb, noCarb } = meals[0];
@@ -97,6 +100,18 @@ const MealCard = ({ ...props }) => {
         {halfCarb && <Chip label="Half Carb" className={classes.chip} />}
         {noCarb && <Chip label="No Carb" className={classes.chip} />}
         {glutenFree && <Chip label="Gluten Free" className={classes.chip} />}
+        {missedPickup && (
+          <Chip
+            avatar={
+              <Avatar>
+                <ClearIcon />
+              </Avatar>
+            }
+            label="Missed Pickup"
+            color="secondary"
+            variant="outlined"
+          />
+        )}
       </CardActions>
     </Card>
   );
