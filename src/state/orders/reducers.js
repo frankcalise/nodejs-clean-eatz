@@ -5,7 +5,6 @@ const initialState = [];
 
 const ordersReducer = createReducer(initialState)({
   [types.FETCH_ORDERS]: (state, action) => {
-    console.log(action);
     return action.orders || [];
   }
 });
