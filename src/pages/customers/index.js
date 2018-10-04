@@ -8,6 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import CustomerDetail from "./CustomerDetail";
 import WithLoader from "../../components/WithLoader";
 import { fetchCustomers } from "../../state/customers/actions";
+import { encodeAsFirebaseKey } from "../../utils/firebaseUtils";
 
 const propTypes = { classes: PropTypes.object.isRequired };
 
@@ -48,7 +49,7 @@ class Customers extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const customerKey = this.props.match.params.id;
+    const customerKey = encodeAsFirebaseKey(this.props.match.params.id || "");
 
     return (
       <WithLoader condition={this.state.loaded} message="Loading Customers">
@@ -73,7 +74,11 @@ class Customers extends React.Component {
             </Grid>
             <Grid item xs={9}>
               <Paper className={classes.paper}>
-                {customerKey && <CustomerDetail customerKey={customerKey} />}
+                {customerKey && (
+                  <CustomerDetail
+                    data={this.props.customers.find(x => x.key === customerKey)}
+                  />
+                )}
               </Paper>
             </Grid>
           </Grid>

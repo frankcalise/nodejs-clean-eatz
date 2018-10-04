@@ -3,7 +3,6 @@ import * as types from "./types";
 import { snapshotToArray } from "../../utils/firebaseUtils";
 
 export const fetchCustomers = () => {
-  console.log("fetchCustomers");
   return dispatch => {
     return customersRef
       .orderByKey()
@@ -13,8 +12,7 @@ export const fetchCustomers = () => {
         return customers;
       })
       .then(customers => {
-        console.log(customers);
-        dispatch({ types: types.FETCH_CUSTOMERS, customers });
+        dispatch({ type: types.FETCH_CUSTOMERS, customers });
       })
       .catch(err => {
         // dispatch({ type: types.SET_ERROR, payload: err });
