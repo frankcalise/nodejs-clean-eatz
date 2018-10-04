@@ -20,3 +20,13 @@ export const getFirstTimeCustomers = (customers, menuDate) => {
       customer.firstOrderDate <= endTime
   );
 };
+
+export const getNonOrderingCustomers = (customers, daysMissed) => {
+  const timeAgo = moment()
+    .subtract(daysMissed, "days")
+    .startOf("day");
+
+  return customers.filter(
+    customer => moment(customer.lastOrderDate).isAfter(timeAgo) === false
+  );
+};

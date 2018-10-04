@@ -1,18 +1,30 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import { withStyles } from "@material-ui/core/styles";
+import moment from "moment";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import moment from "moment";
 import EnhancedTableHead from "../../components/EnhancedTableHead";
-import firebase from "../../config/firebase";
+import WithLoader from "../../components/WithLoader";
+import { getNonOrderingCustomers } from "../../state/customers/selectors";
+import { fetchCustomers } from "../../state/customers/actions";
 
 const propTypes = {
   classes: PropTypes.object.isRequired
+};
+
+const getState = state => ({
+  customers: state.customers,
+  nonOrderingCustomers: getNonOrderingCustomers(state.customers, 30)
+});
+
+const getActions = {
+  fetchCustomers
 };
 
 const styles = theme => ({
@@ -82,55 +94,63 @@ function getSorting(order, orderBy) {
 }
 
 class NonOrderingCustomers extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      daysSinceLastOrder: 30,
-      rows: [],
-      order: "asc",
-      orderBy: "lastOrderDate"
-    };
-  }
+  state = {
+    daysSinceLastOrder: 30,
+    order: "asc",
+    orderBy: "lastOrderDate"
+  };
 
   componentDidMount() {
-    this.runReport();
+    // run get customers if haven't retrieved
+    console.log(this.props);
+    if (this.props.customers.length === 0) {
+      Promise.all([this.props.fetchCustomers()])
+        .then(() => {
+          this.setState({ loaded: true });
+        })
+        .catch(err => {
+          console.error(err);
+          this.setState({ loaded: true });
+        });
+    } else {
+      this.setState({ loaded: true });
+    }
   }
 
-  runReport = () => {
-    const { daysSinceLastOrder } = this.state;
-    firebase
-      .database()
-      .ref("customers")
-      .orderByKey()
-      .once("value")
-      .then(snapshot => {
-        const rows = [];
+  // runReport = () => {
+  //   const { daysSinceLastOrder } = this.state;
+  //   firebase
+  //     .database()
+  //     .ref("customers")
+  //     .orderByKey()
+  //     .once("value")
+  //     .then(snapshot => {
+  //       const rows = [];
 
-        snapshot.forEach(childSnapshot => {
-          const customer = childSnapshot.val();
-          const customerKey = childSnapshot.key;
+  //       snapshot.forEach(childSnapshot => {
+  //         const customer = childSnapshot.val();
+  //         const customerKey = childSnapshot.key;
 
-          const { name, phone, email, lastOrderDate } = customer;
-          const momentRef = moment(lastOrderDate);
-          const timeAgo = moment()
-            .subtract(daysSinceLastOrder, "days")
-            .startOf("day");
+  //         const { name, phone, email, lastOrderDate } = customer;
+  //         const momentRef = moment(lastOrderDate);
+  //         const timeAgo = moment()
+  //           .subtract(daysSinceLastOrder, "days")
+  //           .startOf("day");
 
-          if (momentRef.isAfter(timeAgo) === false) {
-            rows.push({
-              customerKey,
-              name,
-              phone,
-              email,
-              lastOrderDate: momentRef.format("MM/DD/YYYY")
-            });
-          }
-        });
+  //         if (momentRef.isAfter(timeAgo) === false) {
+  //           rows.push({
+  //             customerKey,
+  //             name,
+  //             phone,
+  //             email,
+  //             lastOrderDate: momentRef.format("MM/DD/YYYY")
+  //           });
+  //         }
+  //       });
 
-        this.setState({ rows });
-      });
-  };
+  //       this.setState({ rows });
+  //     });
+  // };
 
   handleRequestSort = (event, property) => {
     const orderBy = property;
@@ -144,17 +164,17 @@ class NonOrderingCustomers extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
-    const { rows, daysSinceLastOrder, order, orderBy } = this.state;
+    const { classes, nonOrderingCustomers } = this.props;
+    const { daysSinceLastOrder, order, orderBy, loaded } = this.state;
 
     return (
-      <React.Fragment>
+      <WithLoader condition={loaded} message="Searching Non-ordering Customers">
         <Typography variant="display1" component="heading">
           Non Ordering Customers
         </Typography>
         <Typography variant="subheading" gutterBottom>
-          Have not ordered in {daysSinceLastOrder} days, {rows.length} total
-          customers
+          Have not ordered in {daysSinceLastOrder} days,{" "}
+          {nonOrderingCustomers.length} total customers
         </Typography>
         <Paper className={classes.root}>
           <Table className={classes.table}>
@@ -165,26 +185,35 @@ class NonOrderingCustomers extends React.Component {
               cols={cols}
             />
             <TableBody>
-              {stableSort(rows, getSorting(order, orderBy)).map(row => {
-                return (
-                  <TableRow key={row.customerKey}>
-                    <TableCell component="th" scope="row">
-                      {row.name}
-                    </TableCell>
-                    <TableCell>{row.lastOrderDate}</TableCell>
-                    <TableCell>{row.email}</TableCell>
-                    <TableCell>{row.phone}</TableCell>
-                  </TableRow>
-                );
-              })}
+              {stableSort(nonOrderingCustomers, getSorting(order, orderBy)).map(
+                customer => {
+                  return (
+                    <TableRow key={customer.key}>
+                      <TableCell component="th" scope="row">
+                        {customer.name}
+                      </TableCell>
+                      <TableCell>
+                        {moment(customer.lastOrderDate).format(
+                          "MM/DD/YYYY hh:mm A"
+                        )}
+                      </TableCell>
+                      <TableCell>{customer.email}</TableCell>
+                      <TableCell>{customer.phone}</TableCell>
+                    </TableRow>
+                  );
+                }
+              )}
             </TableBody>
           </Table>
         </Paper>
-      </React.Fragment>
+      </WithLoader>
     );
   }
 }
 
 NonOrderingCustomers.propTypes = propTypes;
 
-export default withStyles(styles)(NonOrderingCustomers);
+export default connect(
+  getState,
+  getActions
+)(withStyles(styles)(NonOrderingCustomers));
