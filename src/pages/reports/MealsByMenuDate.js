@@ -1,37 +1,39 @@
 import React from "react";
-import firebase from "../../config/firebase";
-import { decodeFirebaseKey, snapshotToArray } from "../../utils/firebaseUtils";
+import { connect } from "react-redux";
+import WithLoader from "../../components/WithLoader";
+import { decodeFirebaseKey } from "../../utils/firebaseUtils";
+import { fetchMeals } from "../../state/mealsByMenuDate/actions";
 
-export default class MealsByMenuDate extends React.Component {
-  constructor(props) {
-    super(props);
+const getState = state => {
+  return {
+    mealsByMenuDate: state.mealsByMenuDate
+  };
+};
 
-    this.state = {
-      data: []
-    };
-  }
+const getActions = {
+  fetchMeals
+};
 
-  componentDidMount() {
-    this.getData();
-  }
-
-  getData = () => {
-    firebase
-      .database()
-      .ref(`mealsByMenuDate`)
-      .once("value")
-      .then(snapshot => {
-        const data = snapshotToArray(snapshot);
-        this.setState({ data });
-      });
+class MealsByMenuDate extends React.Component {
+  state = {
+    loaded: false
   };
 
-  render() {
-    if (this.state.data.length === 0) {
-      return <div className="meals-by-menu-date empty">Loading...</div>;
+  componentDidMount() {
+    if (this.props.mealsByMenuDate.length === 0) {
+      Promise.all([this.props.fetchMeals()])
+        .then(() => {
+          this.setState({ loaded: true });
+        })
+        .catch(err => {
+          console.error(err);
+          this.setState({ loaded: true });
+        });
     }
+  }
 
-    const meals = this.state.data.map(meal => {
+  render() {
+    const meals = this.props.mealsByMenuDate.map(meal => {
       const dateKeys = Object.keys(meal).filter(dateKey => {
         return dateKey !== "key";
       });
@@ -54,9 +56,17 @@ export default class MealsByMenuDate extends React.Component {
     });
 
     return (
-      <div className="meals-by-menu-date">
+      <WithLoader
+        condition={this.state.loaded}
+        message="Loading Meals By Menu Date"
+      >
         <ul>{meals}</ul>
-      </div>
+      </WithLoader>
     );
   }
 }
+
+export default connect(
+  getState,
+  getActions
+)(MealsByMenuDate);

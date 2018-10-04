@@ -11,5 +11,6 @@ const db = firebase.database();
 const customersRef = db.ref("customers");
 const orderSummariesRef = db.ref("orderSummaries");
 const ordersRef = db.ref("orders");
+const mealsByMenuDateRef = db.ref("mealsByMenuDate");
 
-export { Auth, orderSummariesRef, customersRef, ordersRef };
+export { Auth, orderSummariesRef, customersRef, ordersRef, mealsByMenuDateRef };
