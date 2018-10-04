@@ -113,7 +113,6 @@ class FirstTimeCustomers extends React.Component {
 
   componentDidMount() {
     // run get customers if haven't retrieved
-    console.log(this.props);
     if (this.props.customers.length === 0) {
       Promise.all([this.props.fetchCustomers()])
         .then(() => {
