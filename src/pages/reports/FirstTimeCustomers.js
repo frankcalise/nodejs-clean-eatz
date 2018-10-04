@@ -25,7 +25,7 @@ if (today.weekday() < 4) {
   adjWeek = -7;
 }
 const menuDate = moment()
-  .day(-7)
+  .day(adjWeek)
   .weekday(4)
   .startOf("day");
 
