@@ -120,7 +120,8 @@ class OrdersGroupedBySatellite extends React.Component {
   };
 
   render() {
-    // get unique satellite location array
+    // Get unique satellite location array
+    // TODO move this to selector?
     const groups = this.props.satelliteOrders
       .map(x => x.satellitePickUp)
       .filter((value, index, self) => {
