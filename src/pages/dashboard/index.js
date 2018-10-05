@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import WithLoader from "../../components/WithLoader";
 import OrderCountSummaryChart from "./OrderCountSummaryChart";
 import CurrentMealPlanTable from "./CurrentMealPlanTable";
-import MealPlanRadarChart from "./MealPlanRadarChart";
+import MealPlanStackedBarChart from "./MealPlanStackedBarChart";
 import { orderSummaryOperations } from "../../state/orderSummaries";
 
 const getActions = dispatch => {
@@ -19,6 +19,9 @@ const getActions = dispatch => {
 };
 
 const styles = theme => ({
+  root: {
+    flexGrow: 1
+  },
   chartContainer: {
     marginLeft: -22
   },
@@ -58,15 +61,15 @@ class Dashboard extends React.Component {
         <Typography variant="display1" gutterBottom>
           Current Meal Plan
         </Typography>
-        <Grid container spacing={24}>
-          <Grid item xs={12} sm={8}>
+        <Grid container spacing={8}>
+          <Grid item xs={12} sm={6}>
             <div className={classes.tableContainer}>
               <CurrentMealPlanTable />
             </div>
           </Grid>
-          <Grid item xs={8} sm={4}>
+          <Grid item xs={8} sm={2}>
             <div className={classes.tableContainer}>
-              <MealPlanRadarChart />
+              <MealPlanStackedBarChart />
             </div>
           </Grid>
         </Grid>
