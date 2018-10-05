@@ -24,11 +24,13 @@ const getState = state => {
 
 const getActions = dispatch => {
   return {
+    setError: error => dispatch(authOperations.setError(error)),
     signIn: (email, password) =>
       dispatch(authOperations.signIn(email, password)),
     registerUser: (email, password) =>
       dispatch(authOperations.registerUser(email, password)),
-    fetchAllowedUsers: () => dispatch(authOperations.fetchAllowedUsers())
+    fetchAllowedUsers: () => dispatch(authOperations.fetchAllowedUsers()),
+    clearError: () => dispatch(authOperations.clearError())
   };
 };
 
@@ -69,15 +71,10 @@ class SignIn extends React.Component {
   static contextTypes = {
     router: PropTypes.object
   };
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      email: "",
-      password: ""
-    };
-  }
+  state = {
+    email: "",
+    password: ""
+  };
 
   componentWillUpdate(nextProps) {
     if (nextProps.auth) {
@@ -96,7 +93,7 @@ class SignIn extends React.Component {
     const emails = allowedUsers.map(x => x.email);
 
     if (emails.indexOf(email) < 0) {
-      this.setState({ error: "This email is not authorized to sign in." });
+      this.props.setError("This email is not authorized to sign in.");
     } else {
       const user = allowedUsers.find(x => x.email === email);
       if (user.uid === true) {
@@ -113,11 +110,13 @@ class SignIn extends React.Component {
   };
 
   onChangeEmail = event => {
-    this.setState({ email: event.target.value, error: null });
+    this.setState({ email: event.target.value });
+    this.props.clearError();
   };
 
   onChangePassword = event => {
-    this.setState({ password: event.target.value, error: null });
+    this.setState({ password: event.target.value });
+    this.props.clearError();
   };
 
   render() {
