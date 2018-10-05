@@ -1,13 +1,18 @@
 const fbConfig = require("../firebase_config.json");
-const firebase = require("firebase");
+const admin = require("firebase-admin");
+const serviceAccount = require("../service_account.json");
+// const firebase = require("firebase");
 const fs = require("fs");
 const fbUtils = require("../utils/firebase_utils");
 const moment = require("moment");
 
-firebase.initializeApp(fbConfig);
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: fbConfig.databaseURL
+});
 
 const checkMealNameExists = key => {
-  return firebase
+  return admin
     .database()
     .ref("mealsByMenuDate/" + key)
     .once("value")
@@ -27,13 +32,13 @@ const writeMealCount = summary => {
 
     if (checkMealNameExists(encodedKey)) {
       // update
-      firebase
+      admin
         .database()
         .ref(`mealsByMenuDate/${encodedKey}`)
         .update({ [menuDate]: count });
     } else {
       // add
-      firebase
+      admin
         .database()
         .ref(`mealsByMenuDate/${encodedKey}`)
         .set({ [menuDate]: count });
