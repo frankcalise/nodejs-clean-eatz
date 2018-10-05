@@ -12,6 +12,10 @@ import Paper from "@material-ui/core/Paper";
 import WithLoader from "../../components/WithLoader";
 import { getSatelliteOrders } from "../../state/orders/selectors";
 import { fetchOrders } from "../../state/orders/actions";
+import {
+  getLatestOrderSummary,
+  getMealNamesFromSummary
+} from "../../state/orderSummaries/selectors";
 
 const propTypes = {
   classes: PropTypes.object.isRequired
@@ -20,7 +24,10 @@ const propTypes = {
 const getState = state => {
   return {
     orders: state.orders,
-    satelliteOrders: getSatelliteOrders(state.orders)
+    satelliteOrders: getSatelliteOrders(state.orders),
+    mealNames: getMealNamesFromSummary(
+      getLatestOrderSummary(state.orderSummaries)
+    )
   };
 };
 
@@ -38,15 +45,6 @@ const styles = theme => ({
     minWidth: 700
   }
 });
-
-const meals = [
-  "Bacon, Egg, Cheese Wrap",
-  "Chicken Parm",
-  "Paleo Chili",
-  "Pork Loin",
-  "Sweet Chili Shrimp",
-  "BBQ Beef Sweet Potato"
-];
 
 class OrdersGroupedBySatellite extends React.Component {
   state = {
@@ -69,7 +67,7 @@ class OrdersGroupedBySatellite extends React.Component {
   }
 
   renderTable = key => {
-    const { classes } = this.props;
+    const { classes, mealNames } = this.props;
     const rows = this.props.satelliteOrders.filter(
       x => x.satellitePickUp === key
     );
@@ -82,7 +80,7 @@ class OrdersGroupedBySatellite extends React.Component {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                {meals.map(x => {
+                {mealNames.map(x => {
                   return (
                     <TableCell key={x} numeric>
                       {x}
@@ -93,12 +91,12 @@ class OrdersGroupedBySatellite extends React.Component {
             </TableHead>
             <TableBody>
               {rows.map(row => {
-                const meal0 = row.meals.find(x => x.name === meals[0]);
-                const meal1 = row.meals.find(x => x.name === meals[1]);
-                const meal2 = row.meals.find(x => x.name === meals[2]);
-                const meal3 = row.meals.find(x => x.name === meals[3]);
-                const meal4 = row.meals.find(x => x.name === meals[4]);
-                const meal5 = row.meals.find(x => x.name === meals[5]);
+                const meal0 = row.meals.find(x => x.name === mealNames[0]);
+                const meal1 = row.meals.find(x => x.name === mealNames[1]);
+                const meal2 = row.meals.find(x => x.name === mealNames[2]);
+                const meal3 = row.meals.find(x => x.name === mealNames[3]);
+                const meal4 = row.meals.find(x => x.name === mealNames[4]);
+                const meal5 = row.meals.find(x => x.name === mealNames[5]);
 
                 return (
                   <TableRow key={row.customerKey}>

@@ -5,3 +5,7 @@ export const getLatestOrderSummary = orderSummaries => {
 
   return orderSummaries[orderSummaries.length - 1];
 };
+
+export const getMealNamesFromSummary = orderSummary => {
+  return orderSummary.meals.map(meal => meal.name);
+};
