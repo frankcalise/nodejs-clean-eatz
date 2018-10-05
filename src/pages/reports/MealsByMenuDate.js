@@ -1,5 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
+import { withStyles } from "@material-ui/core/styles";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
 import WithLoader from "../../components/WithLoader";
 import { decodeFirebaseKey } from "../../utils/firebaseUtils";
 import { fetchMeals } from "../../state/mealsByMenuDate/actions";
@@ -13,6 +18,32 @@ const getState = state => {
 const getActions = {
   fetchMeals
 };
+
+const styles = theme => ({
+  card: {
+    minWidth: 275
+  },
+  bullet: {
+    display: "inline-block",
+    margin: "0 2px",
+    transform: "scale(0.8)"
+  },
+  title: {
+    marginBottom: 16,
+    fontSize: 14
+  },
+  pos: {
+    marginBottom: 12
+  },
+  chip: {
+    margin: theme.spacing.unit
+  },
+  actions: {
+    display: "flex",
+    justifyContent: "center",
+    flexWrap: "wrap"
+  }
+});
 
 class MealsByMenuDate extends React.Component {
   state = {
@@ -33,6 +64,9 @@ class MealsByMenuDate extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
+    const bull = <span className={classes.bullet}>•</span>;
+
     const meals = this.props.mealsByMenuDate.map(meal => {
       const dateKeys = Object.keys(meal).filter(dateKey => {
         return dateKey !== "key";
@@ -41,17 +75,23 @@ class MealsByMenuDate extends React.Component {
       const dateCounts = dateKeys.map(dateKey => {
         const count = meal[dateKey];
         return (
-          <li key={dateKey}>
-            {dateKey}: {count}
-          </li>
+          <p key={dateKey}>
+            {dateKey} {bull} {count}
+          </p>
         );
       });
 
       return (
-        <li key={meal.key}>
-          {decodeFirebaseKey(meal.key)}
-          <ul>{dateCounts}</ul>
-        </li>
+        <Grid item xs key={meal.key}>
+          <Card className={classes.card}>
+            <CardContent>
+              <Typography variant="headline" component="h2">
+                {decodeFirebaseKey(meal.key)}
+              </Typography>
+              <Typography component="p">{dateCounts}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
       );
     });
 
@@ -60,7 +100,9 @@ class MealsByMenuDate extends React.Component {
         condition={this.state.loaded}
         message="Loading Meals By Menu Date"
       >
-        <ul>{meals}</ul>
+        <Grid container spacing={8}>
+          {meals}
+        </Grid>
       </WithLoader>
     );
   }
@@ -69,4 +111,4 @@ class MealsByMenuDate extends React.Component {
 export default connect(
   getState,
   getActions
-)(MealsByMenuDate);
+)(withStyles(styles)(MealsByMenuDate));
