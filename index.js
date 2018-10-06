@@ -110,7 +110,9 @@ const parseOrders = body => {
       .val();
 
     // Build order object based off parsed results
+    const menuDate = thursday.format("YYYY-MM-DD");
     const order = {
+      menuDate,
       customer: {
         name,
         email,
