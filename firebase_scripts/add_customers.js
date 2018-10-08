@@ -82,12 +82,13 @@ const writeOrderData = (item, customerKey) => {
     total,
     meals,
     tip,
-    satellitePickUp
+    satellitePickUp,
+    menuDate
   } = item;
 
   admin
     .database()
-    .ref(`orders/${orderId}/${transactionId}`)
+    .ref(`orders/${menuDate}/${transactionId}`)
     .set({
       customerKey,
       orderDate: moment(orderDate).format(),
@@ -123,7 +124,7 @@ orders.forEach(item => {
   const customer = item.customer;
   const customerKey = fbUtils.encodeAsFirebaseKey(customer.email);
 
-  const { orderId, orderDate, transactionId, orders } = item;
+  const { orderId, orderDate, transactionId, orders, menuDate } = item;
 
   checkCustomerExistsByKey(customerKey).then(exists => {
     console.log(exists);
@@ -133,14 +134,14 @@ orders.forEach(item => {
         customer.name,
         customer.email,
         customer.phone,
-        orderId,
+        menuDate,
         orderDate,
         transactionId
       );
     } else {
       // update last order date / id and transaction
-      updateLastOrderData(customerKey, orderId, orderDate, transactionId);
-      updateOrdersForCustomer(customerKey, orderId, transactionId);
+      updateLastOrderData(customerKey, menuDate, orderDate, transactionId);
+      updateOrdersForCustomer(customerKey, menuDate, transactionId);
     }
 
     // add the order details
