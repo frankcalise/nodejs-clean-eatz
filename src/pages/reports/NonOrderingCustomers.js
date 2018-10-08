@@ -42,27 +42,27 @@ const cols = [
   {
     id: "name",
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: "Name",
     isSortable: true
   },
   {
     id: "lastOrderDate",
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: "Last Order Date",
     isSortable: true
   },
   {
     id: "email",
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: "Email"
   },
   {
     id: "phone",
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: "Phone"
   }
 ];

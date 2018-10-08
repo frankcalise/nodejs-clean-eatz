@@ -53,27 +53,27 @@ const cols = [
   {
     id: "name",
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: "Name",
     isSortable: true
   },
   {
     id: "firstOrderDate",
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: "First Order Date",
     isSortable: true
   },
   {
     id: "email",
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: "Email"
   },
   {
     id: "phone",
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: "Phone"
   }
 ];
@@ -166,7 +166,9 @@ class FirstTimeCustomers extends React.Component {
                       <TableCell component="th" scope="row">
                         {customer.name}
                       </TableCell>
-                      <TableCell>{customer.firstOrderDate}</TableCell>
+                      <TableCell>
+                        {moment(customer.firstOrderDate).format("MM/DD/YYYY")}
+                      </TableCell>
                       <TableCell>{customer.email}</TableCell>
                       <TableCell>{customer.phone}</TableCell>
                     </TableRow>

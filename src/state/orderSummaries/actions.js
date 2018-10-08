@@ -1,5 +1,6 @@
 import { orderSummariesRef } from "../../config/firebase";
 import * as types from "./types";
+import { decodeFirebaseKey } from "../../utils/firebaseUtils";
 
 export const fetchOrderSummaries = () => {
   return dispatch => {
@@ -17,7 +18,10 @@ export const fetchOrderSummaries = () => {
           // not all orderSummary items have meals key
           if (meals) {
             Object.keys(meals).forEach(mealKey => {
-              mealsData.push({ name: mealKey, ...meals[mealKey] });
+              mealsData.push({
+                name: decodeFirebaseKey(mealKey),
+                ...meals[mealKey]
+              });
             });
           }
 

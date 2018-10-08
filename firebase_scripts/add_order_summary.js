@@ -3,6 +3,7 @@ const fbConfig = require("../firebase_config.json");
 const serviceAccount = require("../service_account.json");
 const fs = require("fs");
 const moment = require("moment");
+const fbUtils = require("../utils/firebase_utils");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -12,16 +13,28 @@ admin.initializeApp({
 const writeSummaryData = (summary, orderId) => {
   const { orderCount, numMeals, total, tips, meals, menuDate } = summary;
 
+  // encode meal objects
+  const mealKeys = Object.keys(meals);
+  let newMeals = {};
+  mealKeys.map(oldKey => {
+    const newKey = fbUtils.encodeAsFirebaseKey(oldKey);
+    newMeals[newKey] = {
+      ...meals[oldKey]
+    };
+    return;
+  });
+
   admin
     .database()
-    .ref(`orderSummaries/${orderId}`)
+    .ref("orderSummaries")
+    .child(orderId)
     .set({
       orderCount,
       numMeals,
       total,
       tips,
       menuDate,
-      meals
+      meals: newMeals
     });
 };
 
