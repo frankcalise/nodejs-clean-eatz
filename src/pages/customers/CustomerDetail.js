@@ -1,6 +1,6 @@
 import React from "react";
 
-const CustomerDetail = data => {
+const CustomerDetail = ({ data }) => {
   const { name, email, phone } = data;
 
   return (
