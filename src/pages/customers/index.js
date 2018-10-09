@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -9,7 +8,6 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import WithLoader from "../../components/WithLoader";
 import { fetchCustomers } from "../../state/customers/actions";
-import { encodeAsFirebaseKey } from "../../utils/firebaseUtils";
 
 const propTypes = { classes: PropTypes.object.isRequired };
 
@@ -64,7 +62,6 @@ class Customers extends React.Component {
   render() {
     const { classes, searchFilter, customers } = this.props;
     const bull = <span className={classes.bullet}>•</span>;
-    const customerKey = encodeAsFirebaseKey(this.props.match.params.id || "");
 
     const filteredCustomers = (searchFilter !== ""
       ? customers.filter(x => x.name.toLowerCase().indexOf(searchFilter) >= 0)
@@ -81,6 +78,10 @@ class Customers extends React.Component {
                 {customer.email}
                 <br />
                 {customer.phone}
+              </Typography>
+              <Typography component="p">
+                Orders {bull}{" "}
+                {customer.orders ? Object.keys(customer.orders).length : "0"}
               </Typography>
             </CardContent>
           </Card>
