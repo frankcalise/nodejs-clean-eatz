@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
+import { fade } from "@material-ui/core/styles/colorManipulator";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
@@ -16,11 +17,16 @@ import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsNoneIcon from "@material-ui/icons/NotificationsNone";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import SearchIcon from "@material-ui/icons/Search";
+import MoreIcon from "@material-ui/icons/MoreVert";
+import Input from "@material-ui/core/Input";
 import { mainListItems, secondaryListItems } from "../utils/listItems";
+import debounce from "../utils/debounce";
 import { authOperations } from "../state/auth";
 
 const getActions = dispatch => {
   return {
+    dispatch,
     signOut: () => dispatch(authOperations.signOut())
   };
 };
@@ -30,6 +36,9 @@ const drawerWidth = 240;
 const styles = theme => ({
   root: {
     display: "flex"
+  },
+  grow: {
+    flexGrow: 1
   },
   toolbar: {
     paddingRight: 24 // keep right padding when drawer closed
@@ -98,12 +107,64 @@ const styles = theme => ({
   },
   tableContainer: {
     height: 320
+  },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    "&:hover": {
+      backgroundColor: fade(theme.palette.common.white, 0.25)
+    },
+    marginRight: theme.spacing.unit * 2,
+    marginLeft: 0,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: theme.spacing.unit * 3,
+      width: "auto"
+    }
+  },
+  searchIcon: {
+    width: theme.spacing.unit * 9,
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  inputRoot: {
+    color: "inherit",
+    width: "100%"
+  },
+  inputInput: {
+    paddingTop: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
+    paddingLeft: theme.spacing.unit * 10,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("md")]: {
+      width: 200
+    }
+  },
+  sectionDesktop: {
+    display: "none",
+    [theme.breakpoints.up("md")]: {
+      display: "flex"
+    }
+  },
+  sectionMobile: {
+    display: "flex",
+    [theme.breakpoints.up("md")]: {
+      display: "none"
+    }
   }
 });
 
 class DefaultLayout extends React.Component {
   state = {
-    open: true
+    open: true,
+    searchFilter: ""
   };
 
   handleDrawerOpen = () => {
@@ -112,6 +173,17 @@ class DefaultLayout extends React.Component {
 
   handleDrawerClose = () => {
     this.setState({ open: false });
+  };
+
+  handleSearchRequest = debounce(searchFilter => {
+    this.props.dispatch({ type: "search/SEARCH_FILTER", searchFilter });
+  }, 300);
+
+  onSearch = e => {
+    const searchFilter = e.target.value;
+    this.setState({ searchFilter }, () => {
+      this.handleSearchRequest(searchFilter);
+    });
   };
 
   render() {
@@ -149,14 +221,43 @@ class DefaultLayout extends React.Component {
                 noWrap
                 className={classes.title}
               >
-                Dashboard
+                Clean Eatz - Beaufort
               </Typography>
-              <IconButton color="inherit">
-                <NotificationsNoneIcon />
-              </IconButton>
-              <IconButton color="inherit" onClick={this.props.signOut}>
-                <AccountCircleIcon />
-              </IconButton>
+              {this.props.searchEnabled && (
+                <div className={classes.search}>
+                  <div className={classes.searchIcon}>
+                    <SearchIcon />
+                  </div>
+                  <Input
+                    placeholder="Search…"
+                    value={this.state.searchFilter}
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput
+                    }}
+                    onChange={this.onSearch}
+                    // onKeyUp={this.onSearch}
+                  />
+                </div>
+              )}
+              <div className={classes.grow} />
+              <div className={classes.sectionDesktop}>
+                <IconButton color="inherit">
+                  <NotificationsNoneIcon />
+                </IconButton>
+                <IconButton color="inherit" onClick={this.props.signOut}>
+                  <AccountCircleIcon />
+                </IconButton>
+              </div>
+              <div className={classes.sectionMobile}>
+                <IconButton
+                  aria-haspopup="true"
+                  onClick={this.handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <MoreIcon />
+                </IconButton>
+              </div>
             </Toolbar>
           </AppBar>
           <Drawer
@@ -193,7 +294,12 @@ class DefaultLayout extends React.Component {
 }
 
 DefaultLayout.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  searchEnabled: PropTypes.bool
+};
+
+DefaultLayout.defaultProps = {
+  searchEnabled: false
 };
 
 export default connect(

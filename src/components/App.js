@@ -30,10 +30,12 @@ class App extends Component {
           <DefaultLayout
             path="/customers/:id?"
             component={RequireAuth(Customers)}
+            searchEnabled={true}
           />
           <DefaultLayout
             path="/reports/:id?"
             component={RequireAuth(Reports)}
+            searchEnabled={false}
           />
           <DefaultLayout path="/super-custom" component={SuperCustom} />
           <DefaultLayout path="/orders" component={RequireAuth(Orders)} />
