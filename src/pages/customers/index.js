@@ -3,9 +3,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
-import CustomerDetail from "./CustomerDetail";
+import Typography from "@material-ui/core/Typography";
 import WithLoader from "../../components/WithLoader";
 import { fetchCustomers } from "../../state/customers/actions";
 import { encodeAsFirebaseKey } from "../../utils/firebaseUtils";
@@ -13,7 +14,8 @@ import { encodeAsFirebaseKey } from "../../utils/firebaseUtils";
 const propTypes = { classes: PropTypes.object.isRequired };
 
 const getState = state => ({
-  customers: state.customers
+  customers: state.customers,
+  searchFilter: state.search.searchFilter
 });
 
 const getActions = {
@@ -21,13 +23,25 @@ const getActions = {
 };
 
 const styles = theme => ({
-  root: {
-    flexGrow: 1
+  card: {
+    minWidth: 275
   },
-  paper: {
-    padding: theme.spacing.unit * 2,
-    textAlign: "center",
-    color: theme.palette.text.secondary
+  bullet: {
+    display: "inline-block",
+    margin: "0 2px",
+    transform: "scale(0.8)"
+  },
+  title: {
+    marginBottom: 16,
+    fontSize: 14
+  },
+  pos: {
+    marginBottom: 12
+  },
+  actions: {
+    display: "flex",
+    justifyContent: "center",
+    flexWrap: "wrap"
   }
 });
 
@@ -48,41 +62,37 @@ class Customers extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, searchFilter, customers } = this.props;
+    const bull = <span className={classes.bullet}>•</span>;
     const customerKey = encodeAsFirebaseKey(this.props.match.params.id || "");
+
+    const filteredCustomers = (searchFilter !== ""
+      ? customers.filter(x => x.name.toLowerCase().indexOf(searchFilter) >= 0)
+      : customers
+    ).map(customer => {
+      return (
+        <Grid item xs key={customer.key}>
+          <Card className={classes.card}>
+            <CardContent>
+              <Typography variant="headline" component="h2">
+                {customer.name}
+              </Typography>
+              <Typography component="p">
+                {customer.email}
+                <br />
+                {customer.phone}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      );
+    });
 
     return (
       <WithLoader condition={this.state.loaded} message="Loading Customers">
-        <div className={classes.root}>
-          <Grid container spacing={24}>
-            <Grid item xs={3}>
-              <Paper className={classes.paper}>
-                <div className="customers-list">
-                  <h1>
-                    Meal Plan Customers{" "}
-                    <small>{this.props.customers.length}</small>
-                  </h1>
-                  <ul>
-                    {this.props.customers.map(x => (
-                      <li key={x.key}>
-                        <Link to={`/customers/${x.key}`}>{x.name}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Paper>
-            </Grid>
-            <Grid item xs={9}>
-              <Paper className={classes.paper}>
-                {customerKey && (
-                  <CustomerDetail
-                    data={this.props.customers.find(x => x.key === customerKey)}
-                  />
-                )}
-              </Paper>
-            </Grid>
-          </Grid>
-        </div>
+        <Grid container spacing={8}>
+          {filteredCustomers}
+        </Grid>
       </WithLoader>
     );
   }
