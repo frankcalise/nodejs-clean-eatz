@@ -50,13 +50,26 @@ async function main() {
     }
   }
 
-  console.log(primaryCustomer.name);
-
   if (secondaryCustomer) {
     console.log(secondaryCustomer.name);
     // do comparisons
   } else {
     console.log("just move primary");
+    const lowerKey = fbUtils.encodeAsFirebaseKey(primaryKey.toLowerCase());
+    console.log("to key", lowerKey);
+    console.log(primaryCustomer);
+    console.log("switch orders from primary key");
+    const orderKeys = Object.keys(primaryCustomer.orders);
+    const orderUpdates = orderKeys.map(orderKey => {
+      const transactionKey = primaryCustomer.orders[orderKey];
+      return `orders/${orderKey}/${transactionKey}/customerKey`;
+    });
+    // foreach primaryCustomer.orders
+    console.log(orderUpdates);
+    // /orders/orderKey/transactionKey/customerKey
+    // update to lowerKey
+    console.log("remove customer at primaryKey");
+    // customersRef.child(lowerKey).set(primaryCustomer);
   }
 }
 
