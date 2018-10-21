@@ -144,15 +144,17 @@ async function main() {
     // foreach primaryCustomer.orders
     console.log(orderUpdates);
     orderUpdates.forEach(orderPath => {
-      //ordersRef.child(orderPath).update({ customerKey: lowerKey })
+      ordersRef.child(orderPath).update({ customerKey: lowerKey });
     });
 
     console.log("merged key", lowerKey);
-    // customersRef.child(lowerKey).set(primaryCustomer);
+
     const encodedPrimaryKey = fbUtils.encodeAsFirebaseKey(primaryKey);
     const encodedSecondaryKey = fbUtils.encodeAsFirebaseKey(secondaryKey);
-    // customersRef.child(encodedPrimaryKey).remove();
-    // customersRef.child(encodedSecondaryKey).remove();
+    customersRef.child(encodedPrimaryKey).remove();
+    customersRef.child(encodedSecondaryKey).remove();
+
+    customersRef.child(lowerKey).set(combinedCustomer);
   } else {
     console.log("just move primary");
     const lowerKey = fbUtils.encodeAsFirebaseKey(

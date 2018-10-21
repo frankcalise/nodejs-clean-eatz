@@ -122,7 +122,7 @@ if (!orders) {
 orders.forEach(item => {
   console.log(item);
   const customer = item.customer;
-  const customerKey = fbUtils.encodeAsFirebaseKey(customer.email);
+  const customerKey = fbUtils.encodeAsFirebaseKey(customer.email.toLowerCase());
 
   const { orderId, orderDate, transactionId, orders, menuDate } = item;
 
