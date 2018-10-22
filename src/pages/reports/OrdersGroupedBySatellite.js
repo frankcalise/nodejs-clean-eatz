@@ -43,6 +43,9 @@ const styles = theme => ({
   },
   table: {
     minWidth: 700
+  },
+  group: {
+    marginBottom: theme.spacing.unit * 2
   }
 });
 
@@ -71,9 +74,23 @@ class OrdersGroupedBySatellite extends React.Component {
     const rows = this.props.satelliteOrders.filter(
       x => x.satellitePickUp === key
     );
+    const totals = {
+      [mealNames[0]]: 0,
+      [mealNames[1]]: 0,
+      [mealNames[2]]: 0,
+      [mealNames[3]]: 0,
+      [mealNames[4]]: 0,
+      [mealNames[5]]: 0
+    };
+    rows.map(row => {
+      Object.keys(row.meals).map(meal => {
+        const mealKey = row.meals[meal].name;
+        totals[mealKey] += row.meals[meal].qty;
+      });
+    });
 
     return (
-      <div key={key}>
+      <div key={key} className={classes.group}>
         <Typography variant="subheading">{key}</Typography>
         <Paper className={classes.root}>
           <Table className={classes.table}>
@@ -112,6 +129,31 @@ class OrdersGroupedBySatellite extends React.Component {
                   </TableRow>
                 );
               })}
+              {rows && (
+                <TableRow>
+                  <TableCell component="th">
+                    <strong>Total</strong>
+                  </TableCell>
+                  <TableCell numeric>
+                    <strong>{totals[mealNames[0]]}</strong>
+                  </TableCell>
+                  <TableCell numeric>
+                    <strong>{totals[mealNames[1]]}</strong>
+                  </TableCell>
+                  <TableCell numeric>
+                    <strong>{totals[mealNames[2]]}</strong>
+                  </TableCell>
+                  <TableCell numeric>
+                    <strong>{totals[mealNames[3]]}</strong>
+                  </TableCell>
+                  <TableCell numeric>
+                    <strong>{totals[mealNames[4]]}</strong>
+                  </TableCell>
+                  <TableCell numeric>
+                    <strong>{totals[mealNames[5]]}</strong>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </Paper>
