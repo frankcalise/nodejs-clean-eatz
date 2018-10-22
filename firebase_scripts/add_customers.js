@@ -44,6 +44,8 @@ const writeCustomerData = (
       lastOrderId,
       lastTransactionId
     });
+
+  updateOrdersForCustomer(key, lastOrderId, lastTransactionId);
 };
 
 const updateLastOrderData = (
