@@ -12,5 +12,13 @@ const customersRef = db.ref("customers");
 const orderSummariesRef = db.ref("orderSummaries");
 const ordersRef = db.ref("orders");
 const mealsByMenuDateRef = db.ref("mealsByMenuDate");
+const notesRef = db.ref("notes");
 
-export { Auth, orderSummariesRef, customersRef, ordersRef, mealsByMenuDateRef };
+export {
+  Auth,
+  orderSummariesRef,
+  customersRef,
+  ordersRef,
+  mealsByMenuDateRef,
+  notesRef
+};
