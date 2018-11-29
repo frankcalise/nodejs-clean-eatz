@@ -9,3 +9,11 @@ export const getLatestOrderSummary = orderSummaries => {
 export const getMealNamesFromSummary = orderSummary => {
   return orderSummary.meals.map(meal => meal.name);
 };
+
+export const getMenuDates = orderSummaries => {
+  if (orderSummaries.length === 0) {
+    return [];
+  }
+
+  return orderSummaries.map(x => x.menuDate);
+};

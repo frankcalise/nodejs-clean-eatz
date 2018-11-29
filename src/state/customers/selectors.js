@@ -9,7 +9,7 @@ export const getFirstTimeCustomers = (customers, menuDate) => {
     .weekday(4); // Thursday, when menu's get published
 
   // Get both date values in milis
-  const startTime = menuDate.startOf("day").valueOf();
+  const startTime = menuDateRef.startOf("day").valueOf();
   const endTime = nextMenuDate.valueOf();
 
   // Filter list by property firstOrderDate in range

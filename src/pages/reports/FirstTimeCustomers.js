@@ -7,12 +7,20 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
+import MenuItem from "@material-ui/core/MenuItem";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
 import Paper from "@material-ui/core/Paper";
 import moment from "moment";
 import EnhancedTableHead from "../../components/EnhancedTableHead";
 import WithLoader from "../../components/WithLoader";
 import { getFirstTimeCustomers } from "../../state/customers/selectors";
-import { fetchCustomers } from "../../state/customers/actions";
+import {
+  fetchCustomers,
+  selectFirstTimeCustomers
+} from "../../state/customers/actions";
+import { getMenuDates } from "../../state/orderSummaries/selectors";
 
 const propTypes = {
   classes: PropTypes.object.isRequired
@@ -31,11 +39,13 @@ const menuDate = moment()
 
 const getState = state => ({
   customers: state.customers,
-  firstTimeCustomers: getFirstTimeCustomers(state.customers, menuDate)
+  firstTimeCustomers: getFirstTimeCustomers(state.customers, menuDate),
+  menuDates: getMenuDates(state.orderSummaries)
 });
 
 const getActions = {
-  fetchCustomers
+  fetchCustomers,
+  selectFirstTimeCustomers
 };
 
 const styles = theme => ({
@@ -105,11 +115,16 @@ function getSorting(order, orderBy) {
 }
 
 class FirstTimeCustomers extends React.Component {
-  state = {
-    loaded: false,
-    order: "asc",
-    orderBy: "firstOrderDate"
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loaded: false,
+      order: "asc",
+      orderBy: "firstOrderDate",
+      firstTimeCustomers: props.firstTimeCustomers
+    };
+  }
 
   componentDidMount() {
     // run get customers if haven't retrieved
@@ -138,12 +153,45 @@ class FirstTimeCustomers extends React.Component {
     this.setState({ order, orderBy });
   };
 
+  handleChange = event => {
+    const menuDate = event.target.value;
+
+    const firstTimeCustomers = this.props.selectFirstTimeCustomers(
+      this.props.customers,
+      menuDate
+    );
+
+    this.setState({ menuDate, firstTimeCustomers });
+  };
+
   render() {
-    const { classes, firstTimeCustomers } = this.props;
-    const { order, orderBy, loaded } = this.state;
+    const { classes } = this.props;
+    const { order, orderBy, loaded, firstTimeCustomers } = this.state;
+
+    const menuItems = this.props.menuDates.map(x => (
+      <MenuItem key={x} value={x}>
+        {x}
+      </MenuItem>
+    ));
 
     return (
       <WithLoader condition={loaded} message="Searching First Time Customers">
+        <form className={classes.root} autoComplete="off">
+          <FormControl className={classes.formControl}>
+            <InputLabel htmlFor="menu-date-select">Menu Date</InputLabel>
+            <Select
+              value={this.state.menuDate}
+              onChange={this.handleChange}
+              inputProps={{
+                name: "menuDate",
+                id: "menu-date-select"
+              }}
+            >
+              {menuItems}
+            </Select>
+          </FormControl>
+        </form>
+
         <Typography variant="display1">First Time Customers</Typography>
         <Typography variant="subheading" gutterBottom>
           Menu of {moment(this.state.menuDate).format("MM/DD/YYYY")},{" "}
