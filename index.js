@@ -28,10 +28,35 @@ agent
       throw err;
     }
 
+    // fs.writeFile("source.html", resp.text, "utf8");
     parseOrders(resp.text);
   });
 
+const obs_Decrypt_C = (message, __obfs_c_alpha_, __obfs_c_beta_) => {
+  var coded, i, ch, index;
+  var rval = "";
+  for (i = 0; i < message.length; i++) {
+    ch = message.charAt(i);
+    index = __obfs_c_beta_.indexOf(ch);
+    if (index == -1) {
+      rval = coded + ch;
+    } else {
+      rval = rval + __obfs_c_alpha_.charAt(index);
+    }
+  }
+  return rval;
+};
+
 const parseOrders = body => {
+  const varAlpha = "var __obfs_c_alpha_";
+  const varBeta = "var __obfs_c_beta_";
+  const alphaStart = body.indexOf(varAlpha) + varAlpha.length + 2;
+  const alphaEnd = body.indexOf("';", alphaStart);
+  const betaStart = body.indexOf(varBeta) + varBeta.length + 2;
+  const betaEnd = body.indexOf("';", betaStart);
+  const __obfs_c_alpha_ = body.substring(alphaStart, alphaEnd);
+  const __obfs_c_beta_ = body.substring(betaStart, betaEnd);
+
   const orders = [];
   const $ = cheerio.load(body);
   const today = moment();
@@ -45,6 +70,7 @@ const parseOrders = body => {
     .weekday(4)
     .startOf("day");
 
+  let offset = 0;
   $(".sing-ord").each((idx, item) => {
     // Satellite order check
     const isSatellite = $("p", item).hasClass("alert-danger");
@@ -94,11 +120,29 @@ const parseOrders = body => {
       satellitePickUp = parseSatellitePickUp(satellitePickUpNode);
     }
 
-    const customerBlock = $("p", item)
-      .eq(pIndex)
-      .text();
-    const ci = parseCustomerInfo(customerBlock);
-    const { total, payment, name, email, phone, tip, discount, promocode } = ci;
+    const customerBlock = $("p", item).eq(pIndex);
+
+    const numSpans = $("span", customerBlock).length;
+    if (numSpans > 2) {
+      offset += numSpans - 2;
+    }
+
+    const obfsIdx = idx + 1 + offset;
+    const obfsVar = `obfs${obfsIdx}`;
+    const emailAttr = `data-${obfsVar}`;
+    const spanNode = `${emailAttr}='`;
+    const emailStart = body.indexOf(spanNode) + spanNode.length;
+    const emailEnd = body.indexOf("'>", emailStart + 1);
+    // console.log(emailEnd);
+    const encryptedEmail = body.substring(emailStart, emailEnd);
+    const email = obs_Decrypt_C(
+      encryptedEmail,
+      __obfs_c_alpha_,
+      __obfs_c_beta_
+    );
+
+    const ci = parseCustomerInfo(customerBlock.text());
+    const { total, payment, name, phone, tip, discount, promocode } = ci;
 
     // Meal details
     const mealNodes = $(".order", item);
