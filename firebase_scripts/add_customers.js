@@ -52,7 +52,8 @@ const updateLastOrderData = (
   key,
   lastOrderId,
   orderDate,
-  lastTransactionId
+  lastTransactionId,
+  name
 ) => {
   admin
     .database()
@@ -60,7 +61,8 @@ const updateLastOrderData = (
     .update({
       lastOrderDate: moment(orderDate).format(),
       lastOrderId,
-      lastTransactionId
+      lastTransactionId,
+      name
     });
 };
 
@@ -142,7 +144,13 @@ orders.forEach(item => {
       );
     } else {
       // update last order date / id and transaction
-      updateLastOrderData(customerKey, menuDate, orderDate, transactionId);
+      updateLastOrderData(
+        customerKey,
+        menuDate,
+        orderDate,
+        transactionId,
+        customer.name
+      );
       updateOrdersForCustomer(customerKey, menuDate, transactionId);
     }
 
