@@ -1,11 +1,16 @@
+const admin = require("firebase-admin");
 const fbConfig = require("../firebase_config.json");
-const firebase = require("firebase");
+// const firebase = require("firebase");
+const serviceAccount = require("../service_account.json");
 const fs = require("fs");
 
-firebase.initializeApp(fbConfig);
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: fbConfig.databaseURL
+});
 
 const deleteSummaryData = orderId => {
-  firebase
+  admin
     .database()
     .ref("orders")
     .orderByKey()
@@ -17,17 +22,17 @@ const deleteSummaryData = orderId => {
         const orderKey = childSnapshot.key;
         // console.log(orderKey);
 
-        if (orderKey.startsWith("7")) {
+        if (orderKey === "2018-11-29") {
           console.log(orderKey);
-          // firebase
-          //   .database()
-          //   .ref(`orders/${orderKey}`)
-          //   .remove();
+          admin
+            .database()
+            .ref(`orders/${orderKey}`)
+            .remove();
         }
       });
     });
 
-  firebase
+  admin
     .database()
     .ref("customers")
     .orderByKey()
@@ -38,19 +43,20 @@ const deleteSummaryData = orderId => {
         const customerKey = childSnapshot.key;
         const { orders } = customer;
         if (!orders) {
-          console.log(customerKey);
+          console.log(customerKey, " has no orders");
+        } else {
+          const orderKeys = Object.keys(orders);
+          orderKeys.forEach(x => {
+            if (x === "2018-11-29") {
+              const orderPath = `customers/${customerKey}/orders/${x}`;
+              admin
+                .database()
+                .ref(orderPath)
+                .remove();
+              console.log("remove key @", orderPath);
+            }
+          });
         }
-        const orderKeys = Object.keys(orders);
-        orderKeys.forEach(x => {
-          if (x.startsWith("7")) {
-            const orderPath = `customers/${customerKey}/orders/${x}`;
-            // firebase
-            //   .database()
-            //   .ref(orderPath)
-            //   .remove();
-            console.log("remove key @", orderPath);
-          }
-        });
       });
     });
 };
