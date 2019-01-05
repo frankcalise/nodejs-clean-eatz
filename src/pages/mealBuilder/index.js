@@ -47,15 +47,48 @@ const MealBuilderSchema = Yup.object().shape({
     .required("Required"),
   email: Yup.string()
     .email("Invalid email")
-    .required("Required")
+    .required("Required"),
+  meals: Yup.array()
+    .of(
+      Yup.object().shape({
+        protein: Yup.string(),
+        proteinPortion: Yup.number(),
+        carbohydrate: Yup.string(),
+        carbohydratePortion: Yup.string(),
+        vegetable: Yup.string(),
+        sauce: Yup.string(),
+        spice: Yup.string(),
+        addon: Yup.string(),
+        quantity: Yup.number().min(1)
+      })
+    )
+    .required("Must add at least one meal")
+    .min(1, "Must add at least one meal")
 });
+
+const defaultMeal = {
+  protein: "",
+  proteinPortion: 4,
+  carbohydrate: "",
+  carbohydratePortion: "1",
+  vegetable: "",
+  quantity: 1,
+  spice: "",
+  sauce: "",
+  addon: ""
+};
 
 export default class MealBuilder extends React.Component {
   render() {
     return (
       <div className="meal-builder">
         <Formik
-          initialValues={{ firstName: "", lastName: "", email: "", meals: [] }}
+          initialValues={{
+            firstName: "",
+            lastName: "",
+            email: "",
+            meals: [{ ...defaultMeal }]
+          }}
           validationSchema={MealBuilderSchema}
           onSubmit={(values, actions) => {
             console.log(values);
@@ -95,79 +128,122 @@ export default class MealBuilder extends React.Component {
                   <div>
                     {values.meals.map((meal, index) => (
                       <div key={index}>
-                        <label className="form-field" htmlFor="protein">
+                        <label
+                          className="form-field"
+                          htmlFor={`meals[${index}].protein`}
+                        >
                           Protein:
                         </label>
-                        <Field component="select" name="protein">
+                        <Field
+                          component="select"
+                          name={`meals[${index}].protein`}
+                        >
                           {proteinOptions}
                         </Field>
                         <br />
-                        <label className="form-field" htmlFor="proteinPortion">
+                        <label
+                          className="form-field"
+                          htmlFor={`meals[${index}].proteinPortion`}
+                        >
                           Protein Portion (oz):
                         </label>
                         <Field
                           type="number"
-                          name="proteinPortion"
+                          name={`meals[${index}].proteinPortion`}
                           max="10"
                           min="4"
-                          defaultValue={4}
                           step="1"
                         />
                         <br />
-                        <label className="form-field" htmlFor="carbohydrate">
+                        <label
+                          className="form-field"
+                          htmlFor={`meals[${index}].carbohydrate`}
+                        >
                           Carbohydrate:
                         </label>
-                        <Field component="select" name="carbohydrate">
+                        <Field
+                          component="select"
+                          name={`meals[${index}].carbohydrate`}
+                        >
                           {carbohydrateOptions}
                         </Field>
                         <br />
                         <label
                           className="form-field"
-                          htmlFor="carbohydratePortion"
+                          htmlFor={`meals[${index}].carbohydratePortion`}
                         >
                           Carbohydrate Portion:
                         </label>
-                        <Field component="select" name="carbohydratePortion">
+                        <Field
+                          component="select"
+                          name={`meals[${index}].carbohydratePortion`}
+                        >
                           {carbohydratePortionOptions}
                         </Field>
                         <br />
-                        <label className="form-field" htmlFor="vegetable">
+                        <label
+                          className="form-field"
+                          htmlFor={`meals[${index}].vegetable`}
+                        >
                           Vegetable:
                         </label>
-                        <Field component="select" name="vegetable">
+                        <Field
+                          component="select"
+                          name={`meals[${index}].vegetable`}
+                        >
                           {vegetableOptions}
                         </Field>
                         <br />
-                        <label className="form-field" htmlFor="sauce">
+                        <label
+                          className="form-field"
+                          htmlFor={`meals[${index}].sauce`}
+                        >
                           Sauce:
                         </label>
-                        <Field component="select" name="sauce">
+                        <Field
+                          component="select"
+                          name={`meals[${index}].sauce`}
+                        >
                           {sauceOptions}
                         </Field>
                         <br />
-                        <label className="form-field" htmlFor="spice">
+                        <label
+                          className="form-field"
+                          htmlFor={`meals[${index}].spice`}
+                        >
                           Spice:
                         </label>
-                        <Field component="select" name="spice">
+                        <Field
+                          component="select"
+                          name={`meals[${index}].spice`}
+                        >
                           {spiceOptions}
                         </Field>
                         <br />
-                        <label className="form-field" htmlFor="addon">
+                        <label
+                          className="form-field"
+                          htmlFor={`meals[${index}].addon`}
+                        >
                           Extra Add-ons:
                         </label>
-                        <Field component="select" name="addon">
+                        <Field
+                          component="select"
+                          name={`meals[${index}].addon`}
+                        >
                           {addonOptions}
                         </Field>
                         <br />
-                        <label className="form-field" htmlFor="quantity">
+                        <label
+                          className="form-field"
+                          htmlFor={`meals[${index}].quantity`}
+                        >
                           Quantity:
                         </label>
                         <Field
                           type="number"
-                          name="quantity"
+                          name={`meals[${index}].quantity`}
                           max="20"
                           min="1"
-                          defaultValue={1}
                           step="1"
                         />
                         <br />
@@ -179,7 +255,10 @@ export default class MealBuilder extends React.Component {
                         </button>
                       </div>
                     ))}
-                    <button type="button" onClick={() => arrayHelpers.push({})}>
+                    <button
+                      type="button"
+                      onClick={() => arrayHelpers.push({ ...defaultMeal })}
+                    >
                       +
                     </button>
                   </div>
