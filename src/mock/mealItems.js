@@ -224,7 +224,7 @@ const mealItems = [
   {
     id: 29,
     categoryId: 6,
-    name: "No addons",
+    name: "No add-ons",
     pricePerAmount: 0.0,
     extraCost: 0.0
   },
