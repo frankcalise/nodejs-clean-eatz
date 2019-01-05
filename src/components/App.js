@@ -9,6 +9,7 @@ import Reports from "../pages/reports";
 import Orders from "../pages/orders";
 import SignIn from "../pages/auth";
 import SuperCustom from "../pages/super_custom";
+import MealBuilder from "../pages/mealBuilder";
 import { authOperations } from "../state/auth";
 
 const getActions = dispatch => {
@@ -38,6 +39,7 @@ class App extends Component {
             searchEnabled={false}
           />
           <DefaultLayout path="/super-custom" component={SuperCustom} />
+          <DefaultLayout path="/meal-builder" component={MealBuilder} />
           <DefaultLayout path="/orders" component={RequireAuth(Orders)} />
           <Route path="/sign-in" component={SignIn} />
         </Switch>
