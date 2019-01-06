@@ -2,6 +2,10 @@ import React from "react";
 import { Formik, Field, FieldArray, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import mealItems, { itemCategories } from "../../mock/mealItems";
+import {
+  calculateOrderCost,
+  calculateSingleMealCost
+} from "../../utils/mealCalculator";
 
 const getOptionsForItemCategory = categoryId => {
   return mealItems
@@ -67,15 +71,16 @@ const MealBuilderSchema = Yup.object().shape({
 });
 
 const defaultMeal = {
-  protein: "",
+  protein: "1",
   proteinPortion: 4,
-  carbohydrate: "",
+  carbohydrate: "9",
   carbohydratePortion: "1",
-  vegetable: "",
+  vegetable: "15",
   quantity: 1,
-  spice: "",
-  sauce: "",
-  addon: ""
+  spice: "32",
+  sauce: "33",
+  addon: "29",
+  extraSauce: false
 };
 
 export default class MealBuilder extends React.Component {
@@ -121,6 +126,7 @@ export default class MealBuilder extends React.Component {
               </label>
               <Field type="email" name="email" />
               <ErrorMessage name="email" component="div" />
+              <hr />
               <br />
               <FieldArray
                 name="meals"
@@ -206,6 +212,11 @@ export default class MealBuilder extends React.Component {
                         >
                           {sauceOptions}
                         </Field>
+                        <Field
+                          type="checkbox"
+                          name={`meals[${index}].extraSauce`}
+                        />{" "}
+                        Add extra sauce? (+$0.50)
                         <br />
                         <label
                           className="form-field"
@@ -250,20 +261,39 @@ export default class MealBuilder extends React.Component {
                         <button
                           type="button"
                           onClick={() => arrayHelpers.remove(index)}
+                          disabled={values.meals.length === 1}
                         >
-                          -
+                          Remove
                         </button>
+                        <br />
+                        <strong>Meal Total:</strong> $
+                        {(
+                          calculateSingleMealCost(values.meals[index]) *
+                          values.meals[index].quantity
+                        ).toFixed(2)}{" "}
+                        ($
+                        {calculateSingleMealCost(values.meals[index]).toFixed(
+                          2
+                        )}
+                        per item)
+                        <br />
+                        <strong>approximate per meal nutrition info:</strong>
+                        <br />
+                        calories: 0, fat: 0g, carbs: 0g, protein: 0g
+                        <hr />
                       </div>
                     ))}
                     <button
                       type="button"
                       onClick={() => arrayHelpers.push({ ...defaultMeal })}
                     >
-                      +
+                      Add Another
                     </button>
                   </div>
                 )}
               />
+              <br />
+              <strong>Total: ${calculateOrderCost(values.meals)}</strong>
               <br />
               {status && status.msg && <div>{status.msg}</div>}
               <button type="submit" disabled={isSubmitting}>

@@ -7,7 +7,7 @@ const itemCategories = {
   addon: 6
 };
 
-const mealItems = [
+const allItems = [
   {
     id: 1,
     categoryId: 1,
@@ -70,7 +70,7 @@ const mealItems = [
   {
     id: 9,
     categoryId: 2,
-    name: "No carb",
+    name: "- No carb -",
     pricePerAmount: 0.0,
     extraCost: 0.0
   },
@@ -112,7 +112,7 @@ const mealItems = [
   {
     id: 15,
     categoryId: 3,
-    name: "No vegetables",
+    name: "- No vegetables -",
     pricePerAmount: 0.0,
     extraCost: 0.0
   },
@@ -154,7 +154,7 @@ const mealItems = [
   {
     id: 33,
     categoryId: 4,
-    name: "No sauce",
+    name: "- No sauce -",
     pricePerAmount: 0.0,
     extraCost: 0.0
   },
@@ -194,55 +194,140 @@ const mealItems = [
     extraCost: 0.0
   },
   {
+    id: 34,
+    categoryId: 4,
+    name: "Balsamic",
+    pricePerAmount: 0.0,
+    extraCost: 0.0
+  },
+  {
+    id: 35,
+    categoryId: 4,
+    name: "Grecian",
+    pricePerAmount: 0.0,
+    extraCost: 0.0
+  },
+  {
+    id: 36,
+    categoryId: 4,
+    name: "Honey Mustard",
+    pricePerAmount: 0.0,
+    extraCost: 0.0
+  },
+  {
+    id: 37,
+    categoryId: 4,
+    name: "Jerk",
+    pricePerAmount: 0.0,
+    extraCost: 0.0
+  },
+  {
+    id: 38,
+    categoryId: 4,
+    name: "Light Ranch",
+    pricePerAmount: 0.0,
+    extraCost: 0.0
+  },
+  {
+    id: 39,
+    categoryId: 4,
+    name: "Raspberry Vinaigrette",
+    pricePerAmount: 0.0,
+    extraCost: 0.0
+  },
+  {
+    id: 40,
+    categoryId: 4,
+    name: "Salsa",
+    pricePerAmount: 0.0,
+    extraCost: 0.0
+  },
+  {
+    id: 41,
+    categoryId: 4,
+    name: "Thai Peanut",
+    pricePerAmount: 0.0,
+    extraCost: 0.0
+  },
+  {
     id: 32,
     categoryId: 5,
-    name: "No spice",
+    name: "- No spice -",
     pricePerAmount: 0.0,
     extraCost: 0.0
   },
   {
     id: 26,
     categoryId: 5,
-    name: "Fiesta Fit",
+    name: "Fiesta Fit (no sodium)",
     pricePerAmount: 0.0,
     extraCost: 0.0
   },
   {
     id: 27,
     categoryId: 5,
-    name: "Clean Herbz",
+    name: "Clean Herbz (no sodium)",
     pricePerAmount: 0.0,
     extraCost: 0.0
   },
   {
     id: 28,
     categoryId: 5,
-    name: "Swole N Spicy",
+    name: "Swole N Spicy (no sodium)",
     pricePerAmount: 0.0,
     extraCost: 0.0
   },
   {
     id: 29,
     categoryId: 6,
-    name: "No add-ons",
+    name: "- No add-ons -",
     pricePerAmount: 0.0,
     extraCost: 0.0
   },
   {
     id: 30,
     categoryId: 6,
-    name: "1 Tbsp Olive Oil",
+    name: "1 Tbsp Extra Virgin Olive Oil",
     pricePerAmount: 0.0,
     extraCost: 0.75
   },
   {
     id: 31,
     categoryId: 6,
-    name: "1/2 Avocado",
+    name: "1/4 Avocado",
     pricePerAmount: 0.0,
     extraCost: 0.75
+  },
+  {
+    id: 42,
+    categoryId: 6,
+    name: "1/2 Avocado",
+    pricePerAmount: 0.0,
+    extraCost: 1.5
+  },
+  {
+    id: 43,
+    categoryId: 6,
+    name: "1 Tbsp Coconut Oil",
+    pricePerAmount: 0.0,
+    extraCost: 0.75
+  },
+  {
+    id: 44,
+    categoryId: 6,
+    name: "1 oz Sliced Almonds",
+    pricePerAmount: 0.0,
+    extraCost: 1.5
   }
 ];
+
+const compareByName = (a, b) => {
+  if (a.name < b.name) return -1;
+  if (a.name > b.name) return 1;
+  return 0;
+};
+
+const mealItems = allItems.sort(compareByName);
 
 export { itemCategories };
 
