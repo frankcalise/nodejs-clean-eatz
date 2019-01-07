@@ -122,25 +122,36 @@ class FirstTimeCustomers extends React.Component {
       loaded: false,
       order: "asc",
       orderBy: "firstOrderDate",
-      firstTimeCustomers: props.firstTimeCustomers
+      firstTimeCustomers: props.firstTimeCustomers,
+      menuDate: menuDate.format("YYYY-MM-DD")
     };
   }
 
   componentDidMount() {
     // run get customers if haven't retrieved
     if (this.props.customers.length === 0) {
-      Promise.all([this.props.fetchCustomers()])
-        .then(() => {
-          this.setState({ loaded: true });
-        })
-        .catch(err => {
-          console.error(err);
-          this.setState({ loaded: true });
-        });
+      this.getCustomers();
     } else {
-      this.setState({ loaded: true });
+      this.setState({
+        loaded: true
+      });
     }
   }
+
+  getCustomers = async () => {
+    Promise.all([this.props.fetchCustomers()])
+      .then(() => {
+        const firstTimeCustomers = this.props.selectFirstTimeCustomers(
+          this.props.customers,
+          menuDate
+        );
+        this.setState({ loaded: true, firstTimeCustomers });
+      })
+      .catch(err => {
+        console.error(err);
+        this.setState({ loaded: true });
+      });
+  };
 
   handleRequestSort = (event, property) => {
     const orderBy = property;
@@ -169,7 +180,7 @@ class FirstTimeCustomers extends React.Component {
     const { order, orderBy, loaded, firstTimeCustomers } = this.state;
 
     const menuItems = this.props.menuDates.map(x => (
-      <MenuItem key={x} value={x}>
+      <MenuItem key={x} value={x} selected={x === menuDate}>
         {x}
       </MenuItem>
     ));

@@ -21,7 +21,7 @@ export const fetchCustomers = () => {
             });
         });
 
-        Promise.all(promises).then(() => {
+        return Promise.all(promises).then(() => {
           dispatch({ type: types.FETCH_CUSTOMERS, customers });
         });
       })
